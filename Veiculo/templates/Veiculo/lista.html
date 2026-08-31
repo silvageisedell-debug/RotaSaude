@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>veiculos</title>
+</head>
+<body>
+  <h1>veiculos cadastradas</h1>
+  <ul>
+    {% for r in veiculos %}
+      <li> placa:{{ r.placa }} — modelo: {{ r.modelo }} — ano: {{ r.ano }} — chassi: {{ r.chassi}} — renavam: {{r.renavam}} </li>
+    {% empty %}
+      <li>Nenhum veiculo cadastrado ainda.</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
