@@ -1,17 +1,53 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="utf-8">
-  <title>veiculos</title>
-</head>
-<body>
-  <h1>veiculos cadastradas</h1>
-  <ul>
-    {% for r in veiculos %}
-      <li> placa:{{ r.placa }} — modelo: {{ r.modelo }} — ano: {{ r.ano }} — chassi: {{ r.chassi}} — renavam: {{r.renavam}} </li>
-    {% empty %}
-      <li>Nenhum veiculo cadastrado ainda.</li>
-    {% endfor %}
-  </ul>
-</body>
-</html>
+{% extends "Veiculo/base.html" %}
+
+{% block title %}Veículos · RotaSaúde{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+  <div>
+    <h1 class="h3 mb-1">Veículos da frota</h1>
+    <p class="text-secondary mb-0">Cadastro pela porta da frente — sem usar o admin.</p>
+  </div>
+  <a class="btn btn-rs" href="{% url 'novo_veiculo' %}">
+    <i class="bi bi-plus-lg me-1"></i> Novo veículo
+  </a>
+</div>
+
+{% if veiculos %}
+<div class="card rs-card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0 rs-table">
+      <thead>
+        <tr>
+          <th>Placa</th>
+          <th>Modelo</th>
+          <th>Ano</th>
+          <th>Chassi</th>
+          <th>Renavam</th>
+          <th>Capacidade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in veiculos %}
+        <tr>
+          <td class="fw-semibold">{{ r.placa }}</td>
+          <td>{{ r.modelo }}</td>
+          <td>{{ r.ano }}</td>
+          <td>{{ r.chassi }}</td>
+          <td>{{ r.renavam }}</td>
+          <td>{{ r.capacidade }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="rs-empty p-5 text-center">
+  <i class="bi bi-ambulance fs-1 d-block mb-3"></i>
+  <h2 class="h5">Nenhum veículo cadastrado ainda.</h2>
+  <p class="mb-3">Inclua o primeiro veículo da frota pelo formulário.</p>
+  <a class="btn btn-rs" href="{% url 'novo_veiculo' %}">Novo veículo</a>
+</div>
+{% endif %}
+{% endblock %}
