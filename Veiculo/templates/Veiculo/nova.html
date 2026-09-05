@@ -1,0 +1,66 @@
+{% extends "Veiculo/base.html" %}
+
+{% block title %}Novo veículo · RotaSaúde{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7 col-xl-6">
+    <div class="card rs-card">
+      <div class="card-body p-4 p-md-5">
+        <h1 class="h3 mb-1">Novo veículo</h1>
+        <p class="text-secondary mb-4">Preencha os dados da frota. A capacidade deve ficar entre 2 e 5 ocupantes.</p>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+          {% endif %}
+
+          <div class="mb-3">
+            <label for="{{ form.placa.id_for_label }}" class="form-label">{{ form.placa.label }}</label>
+            {{ form.placa }}
+            {% if form.placa.errors %}<div class="invalid-feedback d-block">{{ form.placa.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.modelo.id_for_label }}" class="form-label">{{ form.modelo.label }}</label>
+            {{ form.modelo }}
+            {% if form.modelo.errors %}<div class="invalid-feedback d-block">{{ form.modelo.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.ano.id_for_label }}" class="form-label">{{ form.ano.label }}</label>
+            {{ form.ano }}
+            {% if form.ano.errors %}<div class="invalid-feedback d-block">{{ form.ano.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.chassi.id_for_label }}" class="form-label">{{ form.chassi.label }}</label>
+            {{ form.chassi }}
+            {% if form.chassi.errors %}<div class="invalid-feedback d-block">{{ form.chassi.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.renavam.id_for_label }}" class="form-label">{{ form.renavam.label }}</label>
+            {{ form.renavam }}
+            {% if form.renavam.errors %}<div class="invalid-feedback d-block">{{ form.renavam.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-4">
+            <label for="{{ form.capacidade.id_for_label }}" class="form-label">{{ form.capacidade.label }}</label>
+            {{ form.capacidade }}
+            {% if form.capacidade.help_text %}<div class="form-text">{{ form.capacidade.help_text }}</div>{% endif %}
+            {% if form.capacidade.errors %}<div class="invalid-feedback d-block">{{ form.capacidade.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-rs">Salvar</button>
+            <a class="btn btn-outline-secondary" href="{% url 'lista_veiculos' %}">Voltar à lista</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

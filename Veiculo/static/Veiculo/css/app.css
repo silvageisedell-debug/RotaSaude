@@ -1,0 +1,96 @@
+:root {
+  --rs-teal: #0f766e;
+  --rs-teal-dark: #115e59;
+  --rs-teal-soft: #ccfbf1;
+  --rs-ink: #134e4a;
+  --rs-muted: #5b6b6a;
+  --rs-bg: #f4f7f6;
+  --rs-card: #ffffff;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--rs-bg);
+  color: var(--rs-ink);
+}
+
+.rs-navbar {
+  background: var(--rs-teal);
+}
+
+.rs-navbar .navbar-brand,
+.rs-navbar .nav-link {
+  color: #fff;
+}
+
+.rs-navbar .nav-link:hover,
+.rs-navbar .nav-link:focus,
+.rs-navbar .navbar-brand:hover {
+  color: var(--rs-teal-soft);
+}
+
+.rs-navbar .nav-link.active {
+  color: #fff;
+  font-weight: 600;
+}
+
+.rs-brand-mark {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rs-page {
+  padding-block: 2rem 3rem;
+}
+
+.rs-card {
+  background: var(--rs-card);
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(15, 118, 110, 0.08);
+}
+
+.rs-table thead th {
+  background: var(--rs-teal);
+  color: #fff;
+  font-weight: 600;
+  border: 0;
+  white-space: nowrap;
+}
+
+.rs-table tbody td {
+  vertical-align: middle;
+}
+
+.rs-empty {
+  background: var(--rs-teal-soft);
+  border-radius: 1rem;
+  color: var(--rs-ink);
+}
+
+.rs-footer {
+  color: var(--rs-muted);
+  font-size: 0.875rem;
+}
+
+.btn-rs {
+  background: var(--rs-teal);
+  border-color: var(--rs-teal);
+  color: #fff;
+}
+
+.btn-rs:hover,
+.btn-rs:focus {
+  background: var(--rs-teal-dark);
+  border-color: var(--rs-teal-dark);
+  color: #fff;
+}

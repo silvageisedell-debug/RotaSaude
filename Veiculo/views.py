@@ -1,8 +1,16 @@
-from django.shortcuts import render
-from .models import Veiculo, Marca, Modelo
+from django.shortcuts import render, redirect
+from .models import Veiculo
+from .forms import VeiculoForm
+
 
 def lista_veiculos(request):
-    # Use letras minúsculas e no plural para a variável da lista
-    veiculos = Veiculo.objects.all() 
+    veiculos = Veiculo.objects.all()
     return render(request, "Veiculo/lista.html", {"veiculos": veiculos})
 
+
+def novo_veiculo(request):
+    form = VeiculoForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect("lista_veiculos")
+    return render(request, "Veiculo/nova.html", {"form": form})
