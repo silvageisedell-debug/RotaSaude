@@ -8,7 +8,7 @@ Protótipo acadêmico (ISW-030 Web III / ILP — FATEC Olímpia) de **frota de t
 
 | Papel | Identidade |
 |---|---|
-| Scrum Master | | **silvageisedell** |
+| Scrum Master | **silvageisedell** |
 | Dev | **fjunior** |
 | QA | **kaique029** |
 | Interlecutor | **ignisolus** |
