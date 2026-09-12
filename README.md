@@ -11,7 +11,7 @@ Protótipo acadêmico (ISW-030 Web III / ILP — FATEC Olímpia) de **frota de t
 | Scrum Master | **silvageisedell** |
 | Dev | **fjunior** |
 | QA | **kaique029** |
-| Interlecutor | **ignisolus** |
+| Interlocutor | **ignisolus** |
 | Ambiente | WSL2 + Ubuntu, Python 3, Django 5.2 |
 
 Commits e PRs deste Caderno devem ir com o autor acima — não com o Cursor.
