@@ -8,7 +8,7 @@ O homework do Marco 1 pede para registrar: a equipe aplica Strategy em algum pon
 
 **Não aplicar Strategy agora.** O Marco 1 fecha com validação no model + cadastro por ModelForm. Strategy passaria a fazer sentido quando existirem **famílias de regra** de verdade — por exemplo calcular custo operacional ou prioridade de rota de forma diferente para ambulância, van e carro de passeio. Até lá, um `if` prematuro ou uma hierarquia vazia só aumentaria superfície sem comportamento.
 
-Onde caberia depois (sem código neste ciclo): uma interface `PoliticaOperacional` com `custo()` / `tempo_resposta()`, escolhida pelo tipo do veículo no despacho — alinhado ao ADR 006 (polimorfismo de tipos), que também está só registrado.
+Onde caberia depois (sem código neste ciclo): uma interface `PoliticaOperacional` com `custo()` / `tempo_resposta()`, escolhida pelo tipo do veículo no despacho — alinhado à ADR 006 (polimorfismo de tipos), que também está só registrada e **complementa** a ADR 004 (model único, sem tipo no form).
 
 ## Alternativa descartada
 
@@ -24,6 +24,14 @@ O código do Marco 1 permanece um `Veiculo` + validadores + `VeiculoForm`. O cus
 
 Não confundir “não agora” com “nunca”. Se alguém adicionar `if tipo == ambulancia` em produção, este ADR ficou velho e precisa de um sucessor com código.
 
+## Status
+
+Adotado como decisão negativa do Marco 1 (issue #6). O CRUD da ADR 007 não muda isso: continua um `Veiculo` só.
+
+## Redação
+
+Texto redigido com apoio de IA, em tom formal e informativo, seguindo as boas práticas de Architecture Decision Record (contexto, decisão, alternativa descartada, consequência).
+
 ## Commit
 
-`<hash do commit desta branch — cole depois de commitar>`
+`20c94f3`

@@ -5,7 +5,7 @@
 **Data do trabalho:** 31/08/2026  
 **Escopo:** cadastro pela porta da frente (`ModelForm`) + visual Bootstrap nas páginas de veículo
 
-Este relatório registra o que foi feito, o que passou, o que falhou e as correções aplicadas. Só entra o que foi confirmado no código, no `manage.py check`, no `VeiculoForm` ou por HTTP contra `127.0.0.1:8000`.
+Este relatório registra o que foi feito, o que passou, o que falhou e as correções aplicadas. Só entra o que foi confirmado no código, no `manage.py check`, no `VeiculoForm` ou por HTTP contra `127.0.0.1:8000`. Texto redigido com apoio de IA, em tom formal e informativo.
 
 ---
 
@@ -129,7 +129,7 @@ O encapsulamento do roteiro (Passo 6) ficou comprovado: a recusa veio do validad
 
 | Item | Situação |
 |---|---|
-| Editar / apagar veículo | Fora do escopo (semente do roteiro: próximas aulas) |
+| Editar / apagar veículo | Resolvido na Aula 06 / issue #13 — ver `docs/relatorio-aula06.md` e ADR 007 |
 | `Veiculo/tests.py` | Vazio — o roteiro não exige testes automatizados |
 | Versionamento | Seguir `docs/roteiro-prs.md` (você commita; não usar `git add .`) |
 | Numeração ADR-004 | Resolvida no Caderno: 004 = ModelForm; polimorfismo = ADR 006 |

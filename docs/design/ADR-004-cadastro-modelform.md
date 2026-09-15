@@ -13,7 +13,7 @@ O cadastro do usuário final é um **ModelForm** (`VeiculoForm` em `Veiculo/form
 - URL `/Veiculo/nova/` (`name="novo_veiculo"`)
 - Template com `method="post"` e `{% csrf_token %}`
 
-A regra de capacidade **não** é reescrita no form: ela vem do model (ADR 003).
+A regra de capacidade **não** é reescrita no form: ela vem do model (ADR 003). Editar e apagar reusam este form na ADR 007; não fazem parte desta decisão.
 
 ## Alternativa descartada
 
@@ -23,12 +23,20 @@ O admin expõe Marca, Modelo, Veículo e o restante do sistema, e não tem a car
 
 ## Consequência
 
-Quem abre `/Veiculo/nova/` cadastra sem `/admin/`. Capacidade 0, 1 ou 6 é recusada com a mensagem do model. Ainda não há editar nem apagar (semente das próximas aulas). Marca e Modelo seguem no admin.
+Quem abre `/Veiculo/nova/` cadastra sem `/admin/`. Capacidade 0, 1 ou 6 é recusada com a mensagem do model. Marca e Modelo seguem no admin. Completar o CRUD (editar/apagar) é a [ADR 007](ADR-007-crud-editar-apagar.md), não uma segunda cópia desta decisão.
 
 ## Desafios
 
 Sem pelo menos um `Modelo` no banco o select vem vazio. CSRF ausente vira 403. Validação HTML5 (`min`/`max`) pode impedir o teste da regra — o form usa `novalidate` para o POST chegar no Django.
 
+## Status
+
+Adotado (issue #5 / PR #11). CRUD de edição/exclusão: ADR 007.
+
+## Redação
+
+Texto redigido com apoio de IA, em tom formal e informativo, seguindo as boas práticas de Architecture Decision Record (contexto, decisão, alternativa descartada, consequência).
+
 ## Commit
 
-`<hash do commit desta branch — cole depois de commitar>`
+`2a8ded5`

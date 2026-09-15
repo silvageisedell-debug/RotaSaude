@@ -12,7 +12,7 @@ Três models em `Veiculo/models.py`:
 - `Modelo` — nome + `ForeignKey` para `Marca`
 - `Veiculo` — placa, `ForeignKey` para `Modelo` (`PROTECT`), ano, chassi, Renavam, capacidade
 
-Migração `0001_initial` materializa o esquema. Cadastro de marca/modelo no Marco 1 fica no admin; o veículo passa a ter porta da frente depois (ADR 004).
+Migração `0001_initial` materializa o esquema. Cadastro de marca/modelo no Marco 1 fica no admin; o veículo tem porta da frente na ADR 004 (criar) e na ADR 007 (editar/apagar).
 
 ## Alternativa descartada
 
@@ -28,6 +28,14 @@ Integridade referencial: apagar uma marca em uso some os modelos (`CASCADE`); ap
 
 Ordem de cadastro: Marca → Modelo → Veiculo. Sem isso o select do formulário fica vazio.
 
+## Status
+
+Adotado (issue #2 / PR #8).
+
+## Redação
+
+Texto redigido com apoio de IA, em tom formal e informativo, seguindo as boas práticas de Architecture Decision Record (contexto, decisão, alternativa descartada, consequência).
+
 ## Commit
 
-`<hash do commit desta branch — cole depois de commitar>`
+`d202814`
