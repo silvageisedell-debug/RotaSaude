@@ -4,17 +4,34 @@ Protótipo acadêmico (ISW-030 Web III / ILP — FATEC Olímpia) de **frota de t
 
 **Repositório:** [silvageisedell-debug/RotaSaude](https://github.com/silvageisedell-debug/RotaSaude)
 
-## Engenheiro de projeto
+## Equipe e responsabilidades
 
-| Papel | Identidade |
-|---|---|
-| Scrum Master | **silvageisedell** |
-| Dev | **fjunior** |
-| QA | **kaique029** |
-| Interlocutor | **ignisolus** |
-| Ambiente | WSL2 + Ubuntu, Python 3, Django 5.2 |
+Cada papel tem um dono. As contas abaixo são as do repositório GitHub.
 
-Commits e PRs deste Caderno devem ir com o autor acima — não com o Cursor.
+| Papel | Quem | GitHub |
+|---|---|---|
+| Scrum Master | **silvageisedell** | [silvageisedell-debug](https://github.com/silvageisedell-debug) |
+| Dev | **fjunior** | [frfjunior](https://github.com/frfjunior) |
+| QA | **kaique029** | [Kaique029](https://github.com/Kaique029) |
+| Interlocutor | **ignisolus** | [ignisolus](https://github.com/ignisolus) |
+
+### Scrum Master — silvageisedell
+
+Dono do repositório e do ritmo da Sprint. Abre e prioriza issues no GitHub, define o que entra no Marco, acompanha o quadro e faz o merge na `main` quando a PR passa na régua da aula. Não substitui o Dev no código nem o QA na evidência de teste.
+
+### Dev — fjunior
+
+Implementa o domínio **Veículo** na porta da frente (models, `VeiculoForm`, views, URLs, templates) e redige o Caderno (`docs/design/`, relatórios). Commits e PRs deste Caderno saem com o autor Git **fjunior** `<frf.junior17@outlook.com>` — não com o Cursor. Passo a passo em [docs/roteiro-prs.md](docs/roteiro-prs.md).
+
+### QA — kaique029
+
+Valida o que o Dev entrega contra o roteiro da aula: `manage.py check`, listar/cadastrar/editar/apagar, capacidade 2–5 recusada, pk inexistente em 404, CSRF no POST. Registra falha e correção; sem esse crivo a issue não fecha só porque o código compilou.
+
+### Interlocutor — ignisolus
+
+Ponte da equipe no laboratório e no GitHub: lê o erro em voz alta antes de escalar, garante que o posto não avance com resultado diferente do esperado e alinha nomes do RotaSaúde (Veículo, não Reserva/Usuario) entre issue, código e ADR.
+
+**Ambiente comum:** WSL2 + Ubuntu, Python 3, Django 5.2, venv em `.venv`.
 
 ## Como este Caderno foi escrito
 
