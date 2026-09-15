@@ -42,4 +42,4 @@ Texto redigido com apoio de IA, em tom formal e informativo, seguindo as boas pr
 
 ## Commit
 
-`<hash do commit desta branch — cole depois de commitar>`
+`b9b6a1b`

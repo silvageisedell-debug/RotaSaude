@@ -88,6 +88,7 @@ Fluxo de edição e exclusão (ADR 007 / issue #13):
 | 005 | Strategy **não** no Marco 1 |
 | 006 | Polimorfismo de tipos — só registrado (complementa o 004) |
 | 007 | Editar e apagar pela porta da frente |
+| 008 | SRP: `VeiculoForm` mistura contrato e Bootstrap — só registrado |
 
 O arquivo `docs/design/ADR-004-polimorfismo.md` é um **ponteiro legado**. A ADR 004 vigente é o ModelForm; polimorfismo está na 006.
 
