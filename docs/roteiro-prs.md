@@ -5,6 +5,8 @@ Confira com `git config user.name` e `git config user.email` **antes** do primei
 
 O Cursor **não** deve rodar `git commit`, `git push` nem `gh pr create`.
 
+Textos deste roteiro e do Caderno foram redigidos com apoio de IA, em tom formal e informativo.
+
 **Nunca** use `git add .` — o `.venv` já foi versionado por engano no passado.
 
 Base de todos os PRs: `main`  
@@ -257,6 +259,74 @@ EOF
 
 ---
 
+## PR 7 — Issue #13 (CRUD editar/apagar + Caderno Aula 06)
+
+Branch já criada: `frfjunior/issue13`. **Não** use `git add .` (`.venv` e `db.sqlite3` ficam de fora). O Cursor **não** commita esta PR — você executa os comandos.
+
+```bash
+cd /home/ffernandes/RotaSaude
+git checkout frfjunior/issue13
+
+git add \
+  Veiculo/views.py \
+  Veiculo/urls.py \
+  Veiculo/templates/Veiculo/base.html \
+  Veiculo/templates/Veiculo/lista.html \
+  Veiculo/templates/Veiculo/nova.html \
+  Veiculo/templates/Veiculo/confirmar_apagar.html \
+  docs/design/ADR-001-ambiente.md \
+  docs/design/ADR-002-modelagem.md \
+  docs/design/ADR-003-validacao.md \
+  docs/design/ADR-003-mvt.md \
+  docs/design/ADR-004-cadastro-modelform.md \
+  docs/design/ADR-004-polimorfismo.md \
+  docs/design/ADR-005-strategy.md \
+  docs/design/ADR-006-polimorfismo.md \
+  docs/design/ADR-007-crud-editar-apagar.md \
+  docs/relatorio-aula05.md \
+  docs/relatorio-aula06.md \
+  docs/roteiro-prs.md \
+  README.md
+
+git status   # conferir: nada de .venv, db.sqlite3 nem Roteiro_de_Laboratorio_Aula06.md
+
+git commit -m "$(cat <<'EOF'
+feat: fecha o CRUD de veículo e atualiza o Caderno da Aula 06
+
+Editar e apagar pela porta da frente (issue #13); ADR 006 complementar à 004; ADR 007 documenta a decisão.
+EOF
+)"
+
+git rev-parse --short HEAD
+# cole o hash em docs/design/ADR-007-crud-editar-apagar.md e faça um segundo commit só disso, se quiser
+
+git push -u origin HEAD
+gh pr create --base main --title "CRUD de veículos: editar e apagar (Aula 06)" --body "$(cat <<'EOF'
+## Summary
+- Fecha o CRUD na porta da frente: `editar_veiculo`, `apagar_veiculo`, confirmação no GET e exclusão só no POST
+- ADR 007 no domínio Veículo (não copia Usuario/Paciente do roteiro)
+- ADR 004-polimorfismo vira ponteiro; ADR 006 complementa o 004 sem duplicar validações
+- README, relatórios e nota de IA (docs + Bootstrap nos HTML)
+
+## Test plan
+- [ ] `python manage.py check` — 0 issues
+- [ ] GET `/Veiculo/` — links editar e apagar
+- [ ] GET `/Veiculo/<pk>/editar/` — form preenchido
+- [ ] POST edição válida — 302 e dado atualizado na lista
+- [ ] GET `/Veiculo/<pk>/apagar/` — confirmação, registro permanece
+- [ ] POST apagar — some da lista
+- [ ] `/Veiculo/99999/editar/` e `/apagar/` — 404
+- [ ] `docs/design/` tem 001–007; 004 vigente = ModelForm; 006 = polimorfismo complementar
+
+Closes #13
+EOF
+)"
+```
+
+Não commitar: `.venv/`, `db.sqlite3`, `Roteiro_de_Laboratorio_Aula06.md`, `__pycache__/`.
+
+---
+
 ## Depois de mergear
 
 No GitHub, conferir que cada issue fechou (`Closes #N`).  
@@ -266,6 +336,7 @@ No Teams, o Relator cola o link da pasta:
 
 ## Ordem sugerida
 
-1 → 2 → 3 → 4 (podem ser PRs paralelos, arquivos diferentes)  
-5 (feature)  
-6 (último — README e Caderno)
+1 → 2 → 3 → 4 (podem ser PRs paralelas, arquivos diferentes)  
+5 (feature ModelForm)  
+6 (Caderno Marco 1)  
+7 (issue #13 — CRUD editar/apagar)

@@ -27,6 +27,14 @@ Admin e formulário próprio recusam capacidade fora de 2–5 com a mensagem do 
 
 `PositiveIntegerField` ainda renderiza `min="0"` no HTML; o form usa `novalidate` para o POST inválido chegar no Django e o Passo 6 do laboratório funcionar.
 
+## Status
+
+Adotado (issue #3 / PR #9). A ADR 004 (cadastro) e a ADR 007 (editar) herdam esta regra no `VeiculoForm`.
+
+## Redação
+
+Texto redigido com apoio de IA, em tom formal e informativo, seguindo as boas práticas de Architecture Decision Record (contexto, decisão, alternativa descartada, consequência).
+
 ## Commit
 
-`<hash do commit desta branch — cole depois de commitar>`
+`d96d9f1`

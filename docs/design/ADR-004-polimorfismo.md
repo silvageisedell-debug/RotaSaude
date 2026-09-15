@@ -1,25 +1,16 @@
-# ADR 004 — Onde polimorfismo caberia no RotaSaúde
+# ADR 004 — Polimorfismo (arquivo legado)
 
-## Contexto
-No projeto **RotaSaúde**, temos vários tipos de veículos que fazem coisas semelhantes mas de formas diferentes.
-Hoje temos: Ambulância, Van e Carro de passeio.
-Cada tipo tem uma capacidade diferente (1 a 5 ocupantes), um tempo de resposta diferente e um custo operacional diferente.
-Atualmente, o código usa `if/elif` para decidir qual tipo de veículo usar, o que não é escalável.
+Este arquivo **não** é a ADR 004 do Caderno do RotaSaúde. Permanece no repositório só para quem ainda busca “004 polimorfismo”.
 
-## Decisão
-Aplicar polimorfismo criando uma classe base `Veiculo` e subclasses para cada tipo (Ambulancia, Van, CarroPasseio).
-Cada subclasse implementa seus próprios métodos: `capacidade_maxima()`, `tempo_resposta()`, `custo_operacional()`.
-Uma função genérica trata todos os tipos de veículo igual, sem precisar de `if/elif`.
+| O que você procura | Onde está |
+|---|---|
+| Cadastro pela porta da frente (`VeiculoForm`) | [ADR-004-cadastro-modelform.md](ADR-004-cadastro-modelform.md) — **004 vigente** |
+| Polimorfismo de tipos de veículo | [ADR-006-polimorfismo.md](ADR-006-polimorfismo.md) |
 
-## Alternativa descartada
-Manter o `if/elif` atual no código.
-Funciona agora, mas cada novo tipo de veículo obriga a mexer na função e arrisca quebrar os tipos existentes.
-Não é escalável quando o projeto cresce.
+A ADR 006 **não copia** este rascunho: ela **complementa** a ADR 004. As validações já feitas no 004 (um único `Veiculo`, capacidade 2–5 no model, `VeiculoForm` sem campo tipo) continuam valendo. O 006 só registra a hierarquia futura e a decisão de **não implementar** agora.
 
-## Consequência
-Adicionar um novo tipo de veículo passa a não exigir mexer no código que já existe.
-O código fica mais limpo, mais fácil de testar e mais fácil de manter.
-Cada tipo de veículo fica isolado em sua própria classe.
+Não há subclasses `Ambulancia`, `Van` ou `CarroPasseio` no código. O model atual não usa `if/elif` por tipo — o rascunho antigo estava incorreto nesse ponto.
 
-## Status
-Proposto — ainda não implementado. Só registrando a decisão de design.
+## Redação
+
+Texto redigido com apoio de IA, em tom formal e informativo, seguindo as boas práticas de Architecture Decision Record.

@@ -22,6 +22,14 @@ Todo mundo sobe o mesmo stack: `source .venv/bin/activate` → `python manage.py
 
 Rede do `pip` no laboratório pode falhar; o roteiro prevê wheels no pendrive. Primeiro `runserver` no WSL às vezes não escuta se a porta já estiver ocupada.
 
+## Status
+
+Adotado (issue #1 / PR #7).
+
+## Redação
+
+Texto redigido com apoio de IA, em tom formal e informativo, seguindo as boas práticas de Architecture Decision Record (contexto, decisão, alternativa descartada, consequência).
+
 ## Commit
 
-`<hash do commit desta branch — cole depois de commitar>`
+`87927c3`

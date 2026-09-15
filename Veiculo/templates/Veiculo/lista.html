@@ -3,6 +3,7 @@
 {% block title %}Veículos · RotaSaúde{% endblock %}
 
 {% block content %}
+<!-- Bootstrap 5 nesta tela (tabela, empty state, botões) aplicado com apoio de IA. -->
 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
   <div>
     <h1 class="h3 mb-1">Veículos da frota</h1>
@@ -25,6 +26,7 @@
           <th>Chassi</th>
           <th>Renavam</th>
           <th>Capacidade</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -36,6 +38,11 @@
           <td>{{ r.chassi }}</td>
           <td>{{ r.renavam }}</td>
           <td>{{ r.capacidade }}</td>
+          <td class="text-nowrap">
+            <a href="{% url 'editar_veiculo' r.pk %}">editar</a>
+            <span class="text-secondary mx-1">·</span>
+            <a href="{% url 'apagar_veiculo' r.pk %}">apagar</a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
