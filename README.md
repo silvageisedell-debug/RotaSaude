@@ -10,10 +10,10 @@ Cada papel tem um dono. As contas abaixo são as do repositório GitHub.
 
 | Papel | Quem | GitHub |
 |---|---|---|
-| Scrum Master | **silvageisedell** | [silvageisedell-debug](https://github.com/silvageisedell-debug) |
-| Dev | **fjunior** | [frfjunior](https://github.com/frfjunior) |
-| QA | **kaique029** | [Kaique029](https://github.com/Kaique029) |
-| Interlocutor | **ignisolus** | [ignisolus](https://github.com/ignisolus) |
+| Scrum Master | **Geise** | [silvageisedell-debug](https://github.com/silvageisedell-debug) |
+| Dev | **Fabio** | [frfjunior](https://github.com/frfjunior) |
+| QA | **Kaique** | [Kaique029](https://github.com/Kaique029) |
+| Interlocutor | **Igor** | [ignisolus](https://github.com/ignisolus) |
 
 ### Scrum Master — silvageisedell
 
