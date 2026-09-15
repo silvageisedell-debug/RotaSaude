@@ -327,6 +327,46 @@ Não commitar: `.venv/`, `db.sqlite3`, `Roteiro_de_Laboratorio_Aula06.md`, `__py
 
 ---
 
+## PR 8 — Issue #12 (SRP: responsabilidade misturada)
+
+```bash
+cd /home/ffernandes/RotaSaude
+git checkout main
+git pull origin main
+git checkout -b docs/issue-12-srp
+
+git add \
+  docs/design/ADR-008-srp-veiculoform.md \
+  docs/design/ADR-007-crud-editar-apagar.md \
+  docs/roteiro-prs.md \
+  README.md
+
+git status
+git commit -m "$(cat <<'EOF'
+docs: ADR 008 registra responsabilidade misturada no VeiculoForm
+
+Fecha a issue #12: o form acumula contrato do ModelForm e classes Bootstrap; não separar agora.
+EOF
+)"
+git push -u origin HEAD
+gh pr create --base main --title "ADR 008 — Responsabilidade misturada no VeiculoForm" --body "$(cat <<'EOF'
+## Summary
+- ADR 008: `VeiculoForm.__init__` mistura contrato do model e aparência Bootstrap
+- Decisão: registrar para o Marco 2; não refatorar nesta Sprint
+- Sem mudança de código de runtime
+
+## Test plan
+- [ ] Arquivo visível em `docs/design/ADR-008-srp-veiculoform.md`
+- [ ] README lista a ADR 008
+- [ ] Conferir `Veiculo/forms.py` bate com o texto (classes `form-control` / `is-invalid` no `__init__`)
+
+Closes #12
+EOF
+)"
+```
+
+---
+
 ## Depois de mergear
 
 No GitHub, conferir que cada issue fechou (`Closes #N`).  
@@ -339,4 +379,5 @@ No Teams, o Relator cola o link da pasta:
 1 → 2 → 3 → 4 (podem ser PRs paralelas, arquivos diferentes)  
 5 (feature ModelForm)  
 6 (Caderno Marco 1)  
-7 (issue #13 — CRUD editar/apagar)
+7 (issue #13 — CRUD editar/apagar)  
+8 (issue #12 — SRP / responsabilidade misturada)
