@@ -4,122 +4,97 @@ Protótipo acadêmico (ISW-030 Web III / ILP — FATEC Olímpia) de **frota de t
 
 **Repositório:** [silvageisedell-debug/RotaSaude](https://github.com/silvageisedell-debug/RotaSaude)
 
-## Equipe e responsabilidades
+## Equipe e Responsabilidades
 
-Cada papel tem um dono. As contas abaixo são as do repositório GitHub.
+Cada papel tem um dono específico designado para os ciclos de entrega do projeto.
 
 | Papel | Quem | GitHub |
 |---|---|---|
+| Tech Lead e Arquiteto | **Fabio** | [frfjunior](https://github.com/frfjunior) |
+| QA e Controle do Taiga | **Igor** | [ignisolus](https://github.com/ignisolus) |
 | Scrum Master | **Geise** | [silvageisedell-debug](https://github.com/silvageisedell-debug) |
-| Dev | **Fabio** | [frfjunior](https://github.com/frfjunior) |
-| QA | **Kaique** | [Kaique029](https://github.com/Kaique029) |
-| Interlocutor | **Igor** | [ignisolus](https://github.com/ignisolus) |
+| Apoio de Documentação Física | **Kaique** | [Kaique029](https://github.com/Kaique029) |
 
-### Scrum Master — silvageisedell
+### Tech Lead e Arquiteto — Fabio
 
-Dono do repositório e do ritmo da Sprint. Abre e prioriza issues no GitHub, define o que entra no Marco, acompanha o quadro e faz o merge na `main` quando a PR passa na régua da aula. Não substitui o Dev no código nem o QA na evidência de teste.
+Responsável técnico central pela engenharia de software e modelo de dados. Desenha a arquitetura do domínio (**Veículo**, etc.) implementando models, views, forms e templates, e é o responsável exclusivo por pautar e redigir as Decisões de Arquitetura no Caderno de Design (ADRs) disponíveis em `docs/design/`.
 
-### Dev — fjunior
+### QA e Controle do Taiga — Igor
 
-Implementa o domínio **Veículo** na porta da frente (models, `VeiculoForm`, views, URLs, templates) e redige o Caderno (`docs/design/`, relatórios). Commits e PRs deste Caderno saem com o autor Git **fjunior** `<frf.junior17@outlook.com>` — não com o Cursor. Passo a passo em [docs/roteiro-prs.md](docs/roteiro-prs.md).
+Controlador do repositório ágil e das pontes operacionais. Detém o controle sistemático do _Taiga_, orquestrando a gestão de issues, apontando dependências e validando entregas cruzadas no GitHub antes da aprovação final (Merge). Ele dita a cadência das *User Stories*.
 
-### QA — kaique029
+### Scrum Master — Geise
 
-Valida o que o Dev entrega contra o roteiro da aula: `manage.py check`, listar/cadastrar/editar/apagar, capacidade 2–5 recusada, pk inexistente em 404, CSRF no POST. Registra falha e correção; sem esse crivo a issue não fecha só porque o código compilou.
+Responsável por blindar a equipe técnica, remover impedimentos e assegurar que as cerimônias ágeis e a comunicação avancem de forma sinérgica. Atua ativamente na organização administrativa das Sprints, orquestrando as pautas de alinhamento e operando como a facilitadora chave do processo metodológico da equipe para garantir fluência desde a issue até a entrega final.
 
-### Interlocutor — ignisolus
+### Apoio de Documentação Física — Kaique
 
-Ponte da equipe no laboratório e no GitHub: lê o erro em voz alta antes de escalar, garante que o posto não avance com resultado diferente do esperado e alinha nomes do RotaSaúde (Veículo, não Reserva/Usuario) entre issue, código e ADR.
-
-**Ambiente comum:** WSL2 + Ubuntu, Python 3, Django 5.2, venv em `.venv`.
+Atua no suporte logístico da equipe. É o encarregado formal de repassar as técnicas e diagramações desenvolvidas digitalmente (em código e texto) para o caderno de entrega físico do projeto exigido como documento final da disciplina.
 
 ## Como este Caderno foi escrito
 
-Os textos em `docs/` (ADRs e relatórios) foram redigidos com **apoio de IA**, em tom formal e informativo, seguindo as boas práticas de Architecture Decision Record: contexto, decisão, alternativa descartada e consequência. A observação de domínio (Veículo, não o exemplo Reserva/Usuario do roteiro) é da equipe.
+Os textos em `docs/` (ADRs e relatórios) foram redigidos com **apoio de IA**, em tom formal e informativo, seguindo as boas práticas de Architecture Decision Record: contexto, decisão, e consequência. A observação de domínio técnica central (Veículo, em contraponto aos exemplos das aulas) foi definida pelo Tech Lead.
 
 Os templates HTML usam **Bootstrap 5** aplicado com apoio de IA (utilitários, navbar, formulários e confirmação). O crédito está em comentário de fonte nos `.html`, para não poluir a interface.
 
 ## Arquitetura (MVT)
 
-```
+```text
 Portal/          projeto Django (settings, urls raiz, WSGI/ASGI)
   settings.py    INSTALLED_APPS inclui Veiculo
   urls.py        admin/ + include("Veiculo.urls")
 
 Veiculo/         app de domínio
-  models.py      Marca, Modelo, Veiculo (capacidade 2–5)
+  models.py      Marca, Modelo, Veiculo
   admin.py       cadastro interno de marca/modelo/veículo
   forms.py       VeiculoForm (ModelForm) — porta da frente
   views.py       lista_veiculos, novo_veiculo, editar_veiculo, apagar_veiculo
   urls.py        /Veiculo/, /nova/, /<pk>/editar/, /<pk>/apagar/
-  templates/Veiculo/   base.html, lista.html, nova.html, confirmar_apagar.html
-  static/Veiculo/css/app.css
-  migrations/    0001_initial
-
-docs/design/     Caderno de Design (ADRs)
-docs/roteiro-prs.md
-docs/relatorio-aula05.md
-docs/relatorio-aula06.md
+  templates/     base.html, lista.html, nova.html, confirmar_apagar.html
+  static/css/    app.css
 ```
 
-Fluxo de cadastro (ADR 004):
+## Regras de Negócio Implementadas
 
-1. GET `/Veiculo/nova/` — formulário vazio (CSRF)
-2. POST — `VeiculoForm` valida com as regras do **model**
-3. Válido → `save()` e redirect para `/Veiculo/`
-4. Inválido (ex.: capacidade 1 ou 6) → mesma página, erro no campo, sem gravar
+- Os formulários e lógicas básicas suportam cadastro livre para gerenciar Veículos, e os limites orgânicos operacionais (ex: ocupantes do veículo) serão parametrizados futuramente geridos de maneira escalável pelo ADM baseado no **Tipo do Veículo**, em vez de validações fixas.
+- Placa, chassi e Renavam devem ser únicos e exclusivos.
+- A exclusão em cascata é protegida: o `Modelo` pertence à `Marca`, e a deleção do Veículo possui a flag `PROTECT` para preservar logs.
 
-Fluxo de edição e exclusão (ADR 007 / issue #13):
-
-1. GET `/Veiculo/<pk>/editar/` — mesmo form, preenchido (`instance=`)
-2. POST válido — grava o **mesmo** registro e volta à lista
-3. GET `/Veiculo/<pk>/apagar/` — confirmação; **não** apaga
-4. POST com CSRF — `delete()` e redirect; pk inexistente → 404
-
-## Regras de negócio (Marco 1)
-
-- Capacidade do veículo: **2 a 5** ocupantes (`MinValueValidator` / `MaxValueValidator` + `clean()`)
-- Placa, chassi e Renavam únicos
-- `Modelo` pertence a `Marca`; `Veiculo` referencia `Modelo` com `PROTECT`
-- Marca e Modelo, neste marco, só pelo admin
-
-## Rotas
+## Rotas Mapeadas
 
 | URL | Nome | Função |
 |---|---|---|
-| `/admin/` | — | fundos (equipe) |
-| `/Veiculo/` | `lista_veiculos` | lista da frota |
-| `/Veiculo/nova/` | `novo_veiculo` | cadastro (ModelForm) |
-| `/Veiculo/<pk>/editar/` | `editar_veiculo` | edição (mesmo ModelForm) |
-| `/Veiculo/<pk>/apagar/` | `apagar_veiculo` | confirmação GET; exclusão no POST |
+| `/admin/` | — | Administração de fundos (equipe) |
+| `/Veiculo/` | `lista_veiculos` | Lista geral da frota |
+| `/Veiculo/nova/` | `novo_veiculo` | Realizar cadastro da frota |
+| `/Veiculo/<pk>/editar/` | `editar_veiculo` | Edição dos dados |
+| `/Veiculo/<pk>/apagar/` | `apagar_veiculo` | Confirmação em GET, apagado no POST |
 
 ## Caderno de Design
 
+Todo o escopo que validou e desenhou decisões técnicas está documentado em detalhes nos arquivos ADR (`docs/design/`):
+
 | ADR | Decisão |
 |---|---|
-| 001 | WSL2 + venv + Django |
-| 002 | Models Marca / Modelo / Veiculo |
-| 003 | Validação de capacidade no model |
-| 003-MVT | Lista no padrão MVT |
-| 004 | Cadastro por ModelForm, não pelo admin |
-| 005 | Strategy **não** no Marco 1 |
-| 006 | Polimorfismo de tipos — só registrado (complementa o 004) |
-| 007 | Editar e apagar pela porta da frente |
-| 008 | SRP: `VeiculoForm` mistura contrato e Bootstrap — só registrado |
+| ADR-001 | Adoção do ecossistema WSL2 + venv e Django |
+| ADR-002 | Models estruturais de Marca / Modelo / Veiculo |
+| ADR-003 | Definição da listagem no padrão nativo MVT |
+| ADR-004 | Padronização das exclusividades de validação cruzada |
+| ADR-005 | Cadastro da frota realizado somente por ModelForm externo |
+| ADR-006 | Registro descritivo da necessidade de Polimorfismo futuro |
+| ADR-007 | Strategy Pattern removido do MVP atual |
+| ADR-008 | Uso do Polimorfismo postergado e registrado de forma descritiva |
+| ADR-009 | Permissão para Editar e Apagar pela porta da frente (não-admin) |
+| ADR-010 | Single Responsibility: Débito do VeiculoForm e suas limitações |
+| ADR-011 | Remoção de limites Hardcoded estáticos de ocupantes e escalabilidade |
 
-O arquivo `docs/design/ADR-004-polimorfismo.md` é um **ponteiro legado**. A ADR 004 vigente é o ModelForm; polimorfismo está na 006.
-
-## Como rodar
+## Como Rodar o Sistema
 
 ```bash
-cd ~/RotaSaude          # ou o clone local
+cd ~/RotaSaude
 source .venv/bin/activate
 python manage.py migrate
 python manage.py runserver
 ```
 
-Abrir `http://127.0.0.1:8000/Veiculo/`. Se o form de veículo vier sem modelos, cadastrar Marca e Modelo em `/admin/` antes.
-
-## Commits e PRs
-
-O passo a passo para você executar (sem o Cursor commitar) está em [docs/roteiro-prs.md](docs/roteiro-prs.md).
+Acesso via `http://127.0.0.1:8000/Veiculo/`. (Garantir um superuser no `/admin/` e as suas modelagens de Marca registradas no banco).
