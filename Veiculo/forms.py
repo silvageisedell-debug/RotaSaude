@@ -12,7 +12,7 @@ class VeiculoForm(ModelForm):
             "ano": NumberInput(attrs={"placeholder": "2024", "min": "1900"}),
             "chassi": TextInput(attrs={"placeholder": "17 caracteres", "maxlength": "17"}),
             "renavam": TextInput(attrs={"placeholder": "11 dígitos", "maxlength": "11"}),
-            "capacidade": NumberInput(attrs={"placeholder": "2 a 5", "min": "2", "max": "5"}),
+            "capacidade": NumberInput(attrs={"placeholder": "Ocupantes do veículo"}),
         }
 
     def __init__(self, *args, **kwargs):
