@@ -3,7 +3,7 @@
 Protótipo acadêmico (ISW-030 Web III / ILP — FATEC Olímpia) de **frota de transporte assistencial**. A organização parceira lista, cadastra, edita e apaga veículos pela porta da frente, sem usar o Django Admin.
 
 **Repositório:** [silvageisedell-debug/RotaSaude](https://github.com/silvageisedell-debug/RotaSaude)
-
+eu sou pcd
 ## Equipe e Responsabilidades
 
 Cada papel tem um dono específico designado para os ciclos de entrega do projeto.
