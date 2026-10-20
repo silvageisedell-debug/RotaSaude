@@ -11,21 +11,21 @@ Cada papel tem um dono específico designado para os ciclos de entrega do projet
 | Papel | Quem | GitHub |
 |---|---|---|
 | Tech Lead e Arquiteto | **Fabio** | [frfjunior](https://github.com/frfjunior) |
-| QA e Controle do Taiga | **Igor** | [ignisolus](https://github.com/ignisolus) |
-| Scrum Master | **Geise** | [silvageisedell-debug](https://github.com/silvageisedell-debug) |
+| QA e Controle do Taiga | **Geise** | [silvageisedell-debug](https://github.com/silvageisedell-debug) |
+| Scrum Master | **Igor** | [ignisolus](https://github.com/ignisolus) |
 | Apoio de Documentação Física | **Kaique** | [Kaique029](https://github.com/Kaique029) |
 
 ### Tech Lead e Arquiteto — Fabio
 
 Responsável técnico central pela engenharia de software e modelo de dados. Desenha a arquitetura do domínio (**Veículo**, etc.) implementando models, views, forms e templates, e é o responsável exclusivo por pautar e redigir as Decisões de Arquitetura no Caderno de Design (ADRs) disponíveis em `docs/design/`.
 
-### QA e Controle do Taiga — Igor
+### QA e Controle do Taiga — Geise
 
-Controlador do repositório ágil e das pontes operacionais. Detém o controle sistemático do _Taiga_, orquestrando a gestão de issues, apontando dependências e validando entregas cruzadas no GitHub antes da aprovação final (Merge). Ele dita a cadência das *User Stories*.
+Controladora do repositório ágil e das pontes operacionais. Detém o controle sistemático do _Taiga_, orquestrando a gestão de issues, apontando dependências e validando entregas cruzadas no GitHub antes da aprovação final (Merge). Ela dita a cadência das *User Stories*.
 
-### Scrum Master — Geise
+### Scrum Master — Igor
 
-Responsável por blindar a equipe técnica, remover impedimentos e assegurar que as cerimônias ágeis e a comunicação avancem de forma sinérgica. Atua ativamente na organização administrativa das Sprints, orquestrando as pautas de alinhamento e operando como a facilitadora chave do processo metodológico da equipe para garantir fluência desde a issue até a entrega final.
+Responsável por blindar a equipe técnica, remover impedimentos e assegurar que as cerimônias ágeis e a comunicação avancem de forma sinérgica. Atua ativamente na organização administrativa das Sprints, orquestrando as pautas de alinhamento e operando como o facilitador chave do processo metodológico da equipe para garantir fluência desde a issue até a entrega final.
 
 ### Apoio de Documentação Física — Kaique
 
@@ -87,6 +87,8 @@ Todo o escopo que validou e desenhou decisões técnicas está documentado em de
 | ADR-009 | Permissão para Editar e Apagar pela porta da frente (não-admin) |
 | ADR-010 | Single Responsibility: Débito do VeiculoForm e suas limitações |
 | ADR-011 | Remoção de limites Hardcoded estáticos de ocupantes e escalabilidade |
+| ADR-013 | MVVM não entra no embarque nem no CRUD atual |
+| ADR-014 | Adapter não entra no acesso ao banco |
 
 ## Como Rodar o Sistema
 
