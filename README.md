@@ -90,9 +90,17 @@ Todo o escopo que validou e desenhou decisões técnicas está documentado em de
 
 ## Como Rodar o Sistema
 
+Na primeira vez, na raiz do projeto, crie o ambiente virtual e instale as dependências nesta ordem:
+
 ```bash
-cd ~/RotaSaude
+python3 -m venv .venv
 source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Com o ambiente ativo, aplique as migrações e suba o servidor:
+
+```bash
 python manage.py migrate
 python manage.py runserver
 ```
