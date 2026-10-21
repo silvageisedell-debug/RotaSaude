@@ -1,23 +1,50 @@
-# ADR 012 - Planejamento de Extração - Service no Rota Saúde
+# ADR 012: Planejamento de Extração de Service no Rota Saúde
 
-## Contexto
+**Status:** Planejado  
+**Data:** 21/10/2026 *(ou a data correspondente ao seu registro)*  
+**Contexto do Módulo:** Veículo  
 
-Analisamos as views atuais do módulo de Veículo (lista_veiculos, novo_veiculo, editar_veiculo, apagar_veiculo) e identificamos que todas são simples: realizam operações básicas de CRUD sem misturar responsabilidades complexas. Cada view executa uma única tarefa — buscar dados, validar formulário ou renderizar template — sem aplicar regras de negócio elaboradas.
+---
 
-Reconhecemos que extrair um Service neste momento seria desnecessário. No entanto, conforme o RotaSaúde evolua e novas funcionalidades sejam implementadas (como reservas, cálculo de tarifas com desconto, validação de compatibilidade de mobilidade), haverá oportunidade de aplicar extração.
+## 1. Contexto
 
-## Decisão
+Analisamos as views atuais do módulo de **Veículo** (`lista_veiculos`, `novo_veiculo`, `editar_veiculo`, `apagar_veiculo`) e identificamos que todas são simples: realizam operações básicas de CRUD sem misturar responsabilidades complexas. 
 
-Não extrairemos um Service das views de Veículo agora. Quando funcionalidades mais complexas forem desenvolvidas — especialmente views que busquem dados de múltiplos modelos, apliquem regras de negócio ou transformem dados antes de renderizar — identificaremos o candidato ideal e executaremos a extração seguindo este mesmo padrão de ADR.
+Cada view executa uma única tarefa:
+- Buscar dados;
+- Validar formulário;
+- Renderizar template.
 
-## Alternativa descartada
+Nenhuma delas aplica regras de negócio elaboradas. 
 
-Forçar a extração de um Service mesmo em views triviais. Descartado porque adicionaria complexidade desnecessária ao código.
+Reconhecemos que extrair um *Service* neste momento seria desnecessário e configuraria *overengineering*. No entanto, conforme o **Rota Saúde** evoluir e novas funcionalidades forem implementadas (como reservas, cálculo de tarifas com desconto, validação de compatibilidade de mobilidade), haverá oportunidade e necessidade de aplicar a extração.
 
-## Consequência
+---
 
-O código de Veículo permanece simples e direto, fácil de entender e manter. Quando a complexidade aumentar, teremos experiência e padrão documentado para extrair Services de forma clara e justificada.
+## 2. Decisão
 
-## Status
+**Não extrairemos uma camada de *Service* das views de Veículo no momento atual.**
 
-Planejado — a extração será feita quando funcionalidades mais complexas exigirem.
+A extração será postergada até o surgimento de cenários mais complexos, tais como views que:
+- Busquem dados de múltiplos modelos e relacionamentos;
+- Apliquem regras de negócio condicionais e validações avançadas;
+- Transformem/processem dados antes da renderização ou persistência.
+
+Quando esse momento chegar, identificaremos o candidato ideal e executaremos a extração seguindo as diretrizes documentadas nesta e em futuras ADRs.
+
+---
+
+## 3. Alternativas Descartadas
+
+* **Forçar a extração de um *Service* em views triviais de CRUD:**  
+  *Descartado* porque adicionaria camadas de indireção e complexidade desnecessárias ao código sem ganho real de desacoplamento ou testabilidade.
+
+---
+
+## 4. Consequências
+
+* **Positivas:**
+  * O código do módulo de Veículo permanece simples, direto (*KISS*) e fácil de manter.
+  * Menor carga cognitiva para novas pessoas desenvolvedoras trabalhando no módulo.
+* **Neutras/Futuras:**
+  * Teremos um critério e padrão documentado para justificar tecnicamente o momento exato de introduzir *Services* no projeto.
