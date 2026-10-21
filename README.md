@@ -41,10 +41,10 @@ Os templates HTML usam **Bootstrap 5** aplicado com apoio de IA (utilitários, n
 
 ```text
 Portal/          projeto Django (settings, urls raiz, WSGI/ASGI)
-  settings.py    INSTALLED_APPS inclui Veiculo
-  urls.py        admin/ + include("Veiculo.urls")
+  settings.py    INSTALLED_APPS inclui Veiculo e Rota
+  urls.py        admin/ + include("Veiculo.urls") + include("Rota.urls")
 
-Veiculo/         app de domínio
+Veiculo/         app de domínio da frota
   models.py      Marca, Modelo, Veiculo
   admin.py       cadastro interno de marca/modelo/veículo
   forms.py       VeiculoForm (ModelForm) — porta da frente
@@ -52,13 +52,20 @@ Veiculo/         app de domínio
   urls.py        /Veiculo/, /nova/, /<pk>/editar/, /<pk>/apagar/
   templates/     base.html, lista.html, nova.html, confirmar_apagar.html
   static/css/    app.css
+
+Rota/            app da operação
+  models.py      Disponibilidade (FK para Veiculo, PROTECT)
+  views.py       nova_disponibilidade — validação de data e horário na view
+  urls.py        /disponibilidade/nova/
+  templates/     disponibilidade_nova.html
 ```
 
 ## Regras de Negócio Implementadas
 
 - Os formulários e lógicas básicas suportam cadastro livre para gerenciar Veículos, e os limites orgânicos operacionais (ex: ocupantes do veículo) serão parametrizados futuramente geridos de maneira escalável pelo ADM baseado no **Tipo do Veículo**, em vez de validações fixas.
 - Placa, chassi e Renavam devem ser únicos e exclusivos.
-- A exclusão em cascata é protegida: o `Modelo` pertence à `Marca`, e a deleção do Veículo possui a flag `PROTECT` para preservar logs.
+- A exclusão em cascata é protegida: o `Modelo` pertence à `Marca`, e a deleção do Veículo possui a flag `PROTECT` para preservar logs. A disponibilidade também usa `PROTECT` no veículo.
+- Disponibilidade: a data não pode ser anterior a hoje e o horário é obrigatório. Essa checagem mora na view `nova_disponibilidade`, não no model.
 
 ## Rotas Mapeadas
 
@@ -69,6 +76,7 @@ Veiculo/         app de domínio
 | `/Veiculo/nova/` | `novo_veiculo` | Realizar cadastro da frota |
 | `/Veiculo/<pk>/editar/` | `editar_veiculo` | Edição dos dados |
 | `/Veiculo/<pk>/apagar/` | `apagar_veiculo` | Confirmação em GET, apagado no POST |
+| `/disponibilidade/nova/` | `nova_disponibilidade` | Registrar disponibilidade e vagas |
 
 ## Caderno de Design
 
@@ -90,6 +98,7 @@ Todo o escopo que validou e desenhou decisões técnicas está documentado em de
 | ADR-013 | MVVM não entra no embarque nem no CRUD atual |
 | ADR-014 | Adapter não entra no acesso ao banco |
 | ADR-015 | Pipeline da operação e distribuição das atividades |
+| ADR-017 | Disponibilidade do veículo no app Rota, com validação na view |
 
 ## Como Rodar o Sistema
 
@@ -108,4 +117,4 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Acesso via `http://127.0.0.1:8000/Veiculo/`. (Garantir um superuser no `/admin/` e as suas modelagens de Marca registradas no banco).
+Acesso via `http://127.0.0.1:8000/Veiculo/`. A disponibilidade fica em `http://127.0.0.1:8000/disponibilidade/nova/`. (Garantir um superuser no `/admin/` e as modelagens de Marca, Modelo e Veículo registradas no banco).
