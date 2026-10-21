@@ -89,6 +89,7 @@ Todo o escopo que validou e desenhou decisões técnicas está documentado em de
 | ADR-011 | Remoção de limites Hardcoded estáticos de ocupantes e escalabilidade |
 | ADR-013 | MVVM não entra no embarque nem no CRUD atual |
 | ADR-014 | Adapter não entra no acesso ao banco |
+| ADR-015 | Pipeline da operação e distribuição das atividades |
 
 ## Como Rodar o Sistema
 
