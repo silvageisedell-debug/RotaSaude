@@ -28,6 +28,9 @@
           <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'novo_veiculo' %}active{% endif %}" href="{% url 'novo_veiculo' %}">Novo veículo</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'nova_disponibilidade' %}active{% endif %}" href="{% url 'nova_disponibilidade' %}">Disponibilidade</a>
+          </li>
         </ul>
       </div>
     </div>
