@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registrar Disponibilidade do Veículo · RotaSaúde</title>
+  
+  <!-- Bootstrap 5 e Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- Flatpickr (Componente Moderno e Elegante de Data e Horário) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  
+  <!-- Fonte Moderna Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --rs-teal: #0f766e;
+      --rs-teal-dark: #115e59;
+      --rs-teal-light: #14b8a6;
+      --rs-teal-soft: #f0fdfa;
+      --rs-ink: #0f172a;
+      --rs-muted: #64748b;
+      --rs-bg: #f8fafc;
+      --rs-card: #ffffff;
+      --rs-radius: 1.25rem;
+    }
+
+    body {
+      background-color: var(--rs-bg);
+      color: var(--rs-ink);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .rs-navbar {
+      background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+      box-shadow: 0 4px 20px rgba(15, 118, 110, 0.15);
+      padding-block: 0.85rem;
+    }
+
+    .rs-brand-mark {
+      width: 2.35rem;
+      height: 2.35rem;
+      border-radius: 0.75rem;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      color: #fff;
+      transition: transform 0.2s ease;
+    }
+
+    .rs-navbar .navbar-brand:hover .rs-brand-mark {
+      transform: scale(1.05);
+    }
+
+    .rs-navbar .nav-link {
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .rs-navbar .nav-link:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .rs-navbar .nav-link.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.18);
+      font-weight: 600;
+    }
+
+    .rs-page {
+      padding-block: 3rem 4rem;
+    }
+
+    .rs-card {
+      background: var(--rs-card);
+      border: 1px solid rgba(15, 118, 110, 0.08);
+      border-radius: var(--rs-radius);
+      box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.06), 0 0 1px 1px rgba(15, 23, 42, 0.02);
+      overflow: hidden;
+    }
+
+    .form-label {
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #334155;
+      margin-bottom: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .form-label i {
+      color: var(--rs-teal);
+      font-size: 1rem;
+    }
+
+    .form-control, .form-select {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      color: #1e293b;
+      background-color: #fff;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--rs-teal);
+      box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+      outline: none;
+    }
+
+    .form-text {
+      font-size: 0.82rem;
+      color: #64748b;
+      margin-top: 0.4rem;
+    }
+
+    .btn-rs {
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 0.75rem;
+      padding: 0.8rem 1.6rem;
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .btn-rs:hover {
+      background: linear-gradient(135deg, #115e59 0%, #0f766e 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(15, 118, 110, 0.35);
+      color: #fff;
+    }
+
+    .btn-secondary-custom {
+      background: #f1f5f9;
+      border: 1.5px solid #e2e8f0;
+      color: #475569;
+      font-weight: 600;
+      border-radius: 0.75rem;
+      padding: 0.8rem 1.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary-custom:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .alert-modern {
+      border-radius: 1rem;
+      border: none;
+      padding: 1rem 1.25rem;
+      font-size: 0.92rem;
+    }
+
+    .alert-modern-danger {
+      background-color: #fef2f2;
+      border: 1px solid #fee2e2;
+      color: #991b1b;
+    }
+
+    .alert-modern-success {
+      background-color: #f0fdf4;
+      border: 1px solid #dcfce7;
+      color: #166534;
+    }
+
+    .rs-footer {
+      color: var(--rs-muted);
+      font-size: 0.875rem;
+      border-top: 1px solid #e2e8f0;
+      background: #fff;
+    }
+
+    /* Estilos Elegantes para o Seletor de Horário e Data (Flatpickr) */
+    .flatpickr-calendar {
+      border-radius: 1rem !important;
+      border: 1px solid rgba(15, 118, 110, 0.15) !important;
+      box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.15) !important;
+      font-family: inherit !important;
+    }
+    .flatpickr-day.selected, .flatpickr-day.selected:hover {
+      background: var(--rs-teal) !important;
+      border-color: var(--rs-teal) !important;
+    }
+    .flatpickr-time {
+      border-radius: 0.75rem !important;
+      height: 48px !important;
+      line-height: 48px !important;
+    }
+    .flatpickr-time input {
+      font-weight: 600 !important;
+      font-size: 1.1rem !important;
+      color: var(--rs-teal-dark) !important;
+      border-radius: 0.5rem !important;
+    }
+    .flatpickr-time input:hover, .flatpickr-time input:focus {
+      background: var(--rs-teal-soft) !important;
+    }
+    .flatpickr-time .numInputWrapper span:hover {
+      background: var(--rs-teal-soft) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de Navegação -->
+  <nav class="navbar navbar-expand-lg navbar-dark rs-navbar">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
+        <span class="rs-brand-mark"><i class="bi bi-heart-pulse"></i></span>
+        <span>RotaSaúde</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-label="Abrir menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="menuPrincipal">
+        <ul class="navbar-nav ms-auto gap-1">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Veículos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Disponibilidade</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Conteúdo Principal -->
+  <main class="container rs-page flex-grow-1">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-xl-6">
+        
+        <!-- Cartão do Formulário -->
+        <div class="card rs-card">
+          <div class="card-body p-4 p-md-5">
+            
+            <!-- Título e Subtítulo limpos -->
+            <div class="mb-4">
+              <h1 class="h3 fw-bold mb-1" style="color: #0f172a;">Registrar Disponibilidade</h1>
+              <p class="text-secondary mb-0" style="font-size: 0.95rem;">
+                Informe quando o veículo estará disponível para viagens.
+              </p>
+            </div>
+
+            <!-- Mensagem de Sucesso (surge naturalmente se tudo for preenchido certo) -->
+            <div id="alertaSucesso" class="alert alert-modern alert-modern-success d-flex align-items-center gap-3 mb-4 d-none" role="alert">
+              <i class="bi bi-check-circle-fill fs-4 text-success"></i>
+              <div>
+                <strong>Sucesso!</strong> A disponibilidade foi registrada com sucesso na frota.
+              </div>
+            </div>
+
+            <!-- Mensagem de Erro (surge naturalmente se violar regra ou faltar dados) -->
+            <div id="alertaErro" class="alert alert-modern alert-modern-danger d-flex align-items-start gap-3 mb-4 d-none" role="alert">
+              <i class="bi bi-exclamation-triangle-fill fs-4 text-danger mt-1"></i>
+              <div>
+                <strong>Não foi possível salvar:</strong>
+                <div id="textoErro"></div>
+              </div>
+            </div>
+
+            <!-- Formulário -->
+            <form id="formDisponibilidade" novalidate>
+              
+              <!-- Campo 1: Seletor de Veículo -->
+              <div class="mb-4">
+                <label for="campoVeiculo" class="form-label">
+                  <i class="bi bi-truck"></i> Veículo <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" id="campoVeiculo" required>
+                  <option value="" selected disabled>Selecione um veículo cadastrado...</option>
+                  <option value="1">ABC-1D23 · Chevrolet Spin (7 lugares)</option>
+                  <option value="2">XYZ-9E87 · Renault Master (16 lugares)</option>
+                  <option value="3">BRA-2E19 · Fiat Cronos (5 lugares)</option>
+                </select>
+              </div>
+
+              <!-- Linha com Data e Horário -->
+              <div class="row g-3 mb-4">
+                
+                <!-- Campo 2: Data (digitação e calendário elegantes) -->
+                <div class="col-sm-6">
+                  <label for="campoData" class="form-label">
+                    <i class="bi bi-calendar3"></i> Data <span class="text-danger">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="campoData" 
+                    required 
+                    placeholder="dd/mm/aaaa"
+                  >
+                  <div class="form-text">Digite a data ou escolha no calendário.</div>
+                </div>
+
+                <!-- Campo 3: Horário (moderno, limpo e sem a lista bagunçada) -->
+                <div class="col-sm-6">
+                  <label for="campoHorario" class="form-label">
+                    <i class="bi bi-clock"></i> Horário <span class="text-danger">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="campoHorario" 
+                    required
+                    placeholder="hh:mm"
+                  >
+                  <div class="form-text">Digite o horário ou ajuste pelas setinhas.</div>
+                </div>
+
+              </div>
+
+              <!-- Botões de Ação Modernos -->
+              <div class="d-flex flex-wrap gap-2 pt-2">
+                <button type="submit" class="btn btn-rs flex-grow-1 flex-sm-grow-0">
+                  <i class="bi bi-check2-circle me-1"></i> Salvar Disponibilidade
+                </button>
+                <button type="reset" class="btn btn-secondary-custom" id="btnLimpar">
+                  Limpar
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="rs-footer py-3 mt-auto">
+    <div class="container text-center">
+      RotaSaúde — frota de transporte assistencial
+    </div>
+  </footer>
+
+  <!-- Scripts Flatpickr -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
+  <script>
+    // Inicialização do seletor moderno de Data em Português
+    const fpData = flatpickr("#campoData", {
+      dateFormat: "d/m/Y",
+      minDate: "today", // Impede selecionar data retroativa
+      locale: "pt",
+      allowInput: true
+    });
+
+    // Inicialização do seletor moderno de Horário (sem a coluna bagunçada do navegador!)
+    const fpHorario = flatpickr("#campoHorario", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "H:i",
+      time_24hr: true,
+      locale: "pt",
+      allowInput: true
+    });
+
+    const form = document.getElementById('formDisponibilidade');
+    const alertaSucesso = document.getElementById('alertaSucesso');
+    const alertaErro = document.getElementById('alertaErro');
+    const textoErro = document.getElementById('textoErro');
+    const campoVeiculo = document.getElementById('campoVeiculo');
+    const campoData = document.getElementById('campoData');
+    const campoHorario = document.getElementById('campoHorario');
+
+    // Validação ao enviar
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      // Limpa alertas anteriores
+      alertaSucesso.classList.add('d-none');
+      alertaErro.classList.add('d-none');
+      campoVeiculo.classList.remove('is-invalid');
+      campoData.classList.remove('is-invalid');
+      campoHorario.classList.remove('is-invalid');
+
+      let erros = [];
+
+      // 1. Veículo obrigatório
+      if (!campoVeiculo.value) {
+        campoVeiculo.classList.add('is-invalid');
+        erros.push('Selecione um veículo cadastrado na lista.');
+      }
+
+      // 2. Data obrigatória e não retroativa
+      if (!campoData.value) {
+        campoData.classList.add('is-invalid');
+        erros.push('Informe a data da disponibilidade.');
+      }
+
+      // 3. Horário obrigatório
+      if (!campoHorario.value) {
+        campoHorario.classList.add('is-invalid');
+        erros.push('O horário de disponibilidade é obrigatório.');
+      }
+
+      // Exibe erros ou sucesso
+      if (erros.length > 0) {
+        let lista = '<ul class="mb-0 mt-1 ps-3">';
+        erros.forEach(function(item) {
+          lista += '<li>' + item + '</li>';
+        });
+        lista += '</ul>';
+        textoErro.innerHTML = lista;
+        alertaErro.classList.remove('d-none');
+      } else {
+        alertaSucesso.classList.remove('d-none');
+      }
+    });
+
+    // Ao limpar o formulário
+    document.getElementById('btnLimpar').addEventListener('click', function() {
+      alertaSucesso.classList.add('d-none');
+      alertaErro.classList.add('d-none');
+      campoVeiculo.classList.remove('is-invalid');
+      campoData.classList.remove('is-invalid');
+      campoHorario.classList.remove('is-invalid');
+      fpData.clear();
+      fpHorario.clear();
+    });
+  </script>
+</body>
+</html>
+
