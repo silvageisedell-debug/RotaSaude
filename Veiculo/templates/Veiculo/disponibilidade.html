@@ -1,0 +1,165 @@
+{% extends "Veiculo/base.html" %}
+
+{% block title %}Registrar Disponibilidade · RotaSaúde{% endblock %}
+
+{% block content %}
+<!-- Componente Flatpickr para seleção moderna de Data e Horário -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+  .flatpickr-calendar {
+    border-radius: 1rem !important;
+    border: 1px solid rgba(15, 118, 110, 0.15) !important;
+    box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.15) !important;
+    font-family: inherit !important;
+  }
+  .flatpickr-day.selected, .flatpickr-day.selected:hover {
+    background: var(--rs-teal) !important;
+    border-color: var(--rs-teal) !important;
+  }
+  .flatpickr-time {
+    border-radius: 0.75rem !important;
+    height: 48px !important;
+    line-height: 48px !important;
+  }
+  .flatpickr-time input {
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    color: var(--rs-teal-dark) !important;
+    border-radius: 0.5rem !important;
+  }
+  .flatpickr-time input:hover, .flatpickr-time input:focus {
+    background: var(--rs-teal-soft) !important;
+  }
+</style>
+
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card rs-card">
+      <div class="card-body p-4 p-md-5">
+        
+        <!-- Cabeçalho do Formulário -->
+        <div class="mb-4">
+          <h1 class="h3 fw-bold mb-1">Registrar Disponibilidade</h1>
+          <p class="text-secondary mb-0">
+            Informe quando o veículo estará disponível para viagens.
+          </p>
+        </div>
+
+        <!-- Mensagem de Sucesso (vinda da View) -->
+        {% if sucesso %}
+        <div class="alert alert-success d-flex align-items-center gap-3 mb-4" role="alert">
+          <i class="bi bi-check-circle-fill fs-4 text-success"></i>
+          <div>
+            <strong>Sucesso!</strong> A disponibilidade foi registrada com sucesso na frota.
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Mensagem de Erro (vinda da View) -->
+        {% if erro %}
+        <div class="alert alert-danger d-flex align-items-start gap-3 mb-4" role="alert">
+          <i class="bi bi-exclamation-triangle-fill fs-4 text-danger mt-1"></i>
+          <div>
+            <strong>Não foi possível salvar:</strong>
+            <div class="mt-1">{{ erro }}</div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Formulário Oficial -->
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <!-- Campo 1: Seletor de Veículo (ADR 002: sem texto livre) -->
+          <div class="mb-4">
+            <label for="id_veiculo" class="form-label fw-semibold">
+              <i class="bi bi-truck text-success"></i> Veículo <span class="text-danger">*</span>
+            </label>
+            <select name="veiculo" id="id_veiculo" class="form-select" required>
+              <option value="" selected disabled>Selecione um veículo cadastrado...</option>
+              {% for veiculo in veiculos %}
+                <option value="{{ veiculo.id }}">{{ veiculo.placa }} - {{ veiculo.modelo }} ({{ veiculo.capacidade }} lugares)</option>
+              {% empty %}
+                <option value="" disabled>Nenhum veículo cadastrado na frota.</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Linha com Data e Horário (Responsivo no Celular e PC) -->
+          <div class="row g-3 mb-4">
+            
+            <!-- Campo 2: Data -->
+            <div class="col-12 col-sm-6">
+              <label for="id_data" class="form-label fw-semibold">
+                <i class="bi bi-calendar3 text-success"></i> Data <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="text" 
+                name="data" 
+                id="id_data" 
+                class="form-control" 
+                required 
+                placeholder="dd/mm/aaaa"
+              >
+              <div class="form-text">Digite a data ou use o calendário.</div>
+            </div>
+
+            <!-- Campo 3: Horário -->
+            <div class="col-12 col-sm-6">
+              <label for="id_horario" class="form-label fw-semibold">
+                <i class="bi bi-clock text-success"></i> Horário <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="text" 
+                name="horario" 
+                id="id_horario" 
+                class="form-control" 
+                required 
+                placeholder="hh:mm"
+              >
+              <div class="form-text">Digite o horário ou use as setas.</div>
+            </div>
+
+          </div>
+
+          <!-- Botões de Ação -->
+          <div class="d-flex flex-wrap gap-2 pt-2">
+            <button type="submit" class="btn btn-rs flex-grow-1 flex-sm-grow-0">
+              <i class="bi bi-check2-circle me-1"></i> Salvar Disponibilidade
+            </button>
+            <a class="btn btn-outline-secondary" href="{% url 'lista_veiculos' %}">
+              Voltar à lista
+            </a>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts Flatpickr para Calendário e Relógio Modernos -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+<script>
+  // Inicialização do seletor moderno de Data em Português
+  flatpickr("#id_data", {
+    dateFormat: "d/m/Y",
+    minDate: "today",
+    locale: "pt",
+    allowInput: true
+  });
+
+  // Inicialização do seletor moderno de Horário
+  flatpickr("#id_horario", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+    locale: "pt",
+    allowInput: true
+  });
+</script>
+{% endblock %}
+

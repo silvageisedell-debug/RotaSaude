@@ -1,0 +1,1098 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RotaSaúde — Transporte Sanitário de Olímpia / SP</title>
+  
+  <!-- Fontes Modernas: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 & Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- Alpine.js para micro-interatividades modernas -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <style>
+    :root {
+      --rs-primary: #0f766e;
+      --rs-primary-hover: #0d9488;
+      --rs-primary-dark: #115e59;
+      --rs-primary-light: #ccfbf1;
+      --rs-accent: #10b981;
+      --rs-accent-soft: #d1fae5;
+      
+      --rs-ink: #0f172a;
+      --rs-ink-secondary: #334155;
+      --rs-muted: #64748b;
+      
+      --rs-bg: #f8fafc;
+      --rs-surface: #ffffff;
+      --rs-surface-alt: #f1f5f9;
+      --rs-border: #e2e8f0;
+      
+      --rs-radius-sm: 0.5rem;
+      --rs-radius-md: 0.875rem;
+      --rs-radius-lg: 1.25rem;
+      --rs-radius-xl: 1.75rem;
+      
+      --rs-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --rs-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+      --rs-shadow-lg: 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -4px rgba(15, 23, 42, 0.04);
+      --rs-shadow-xl: 0 25px 50px -12px rgba(15, 118, 110, 0.15);
+      
+      --rs-transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-contrast="high"] {
+      --rs-bg: #000000 !important;
+      --rs-surface: #121212 !important;
+      --rs-surface-alt: #1e1e1e !important;
+      --rs-ink: #ffffff !important;
+      --rs-ink-secondary: #f1f5f9 !important;
+      --rs-muted: #cbd5e1 !important;
+      --rs-border: #475569 !important;
+      --rs-primary: #2dd4bf !important;
+      --rs-primary-hover: #5eead4 !important;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--rs-bg);
+      color: var(--rs-ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    .top-gov-bar {
+      background: #092c28;
+      color: #99f6e4;
+      font-size: 0.8125rem;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .top-gov-bar a {
+      color: #ccfbf1;
+      text-decoration: none;
+      transition: var(--rs-transition);
+    }
+    .top-gov-bar a:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    .navbar-rotasaude {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      transition: var(--rs-transition);
+      z-index: 1030;
+    }
+    [data-contrast="high"] .navbar-rotasaude {
+      background: rgba(18, 18, 18, 0.95);
+      border-bottom-color: #334155;
+    }
+
+    .brand-logo-box {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--rs-radius-md);
+      background: linear-gradient(135deg, var(--rs-primary) 0%, var(--rs-accent) 100%);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      color: var(--rs-ink);
+      line-height: 1.1;
+    }
+    .brand-subtitle {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--rs-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: block;
+    }
+
+    .nav-link {
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: var(--rs-ink-secondary);
+      padding: 0.6rem 1rem !important;
+      border-radius: var(--rs-radius-sm);
+      transition: var(--rs-transition);
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--rs-primary);
+      background-color: rgba(15, 118, 110, 0.06);
+    }
+
+    .status-pulse-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulseAnimation 2s infinite;
+    }
+    @keyframes pulseAnimation {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+
+    .btn-rs-primary {
+      background: linear-gradient(135deg, var(--rs-primary) 0%, #0d9488 100%);
+      color: #ffffff !important;
+      border: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 0.75rem 1.6rem;
+      border-radius: var(--rs-radius-md);
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.28);
+      transition: var(--rs-transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .btn-rs-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15, 118, 110, 0.38);
+      background: linear-gradient(135deg, var(--rs-primary-dark) 0%, var(--rs-primary) 100%);
+    }
+
+    .btn-rs-secondary {
+      background: var(--rs-surface);
+      color: var(--rs-ink) !important;
+      border: 1.5px solid var(--rs-border);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.75rem 1.4rem;
+      border-radius: var(--rs-radius-md);
+      transition: var(--rs-transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .btn-rs-secondary:hover {
+      background: var(--rs-surface-alt);
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+
+    .hero-section {
+      position: relative;
+      padding: 4.5rem 0 5rem;
+      background: radial-gradient(120% 80% at 50% -10%, #e6fffa 0%, #f8fafc 100%);
+      overflow: hidden;
+      border-bottom: 1px solid var(--rs-border);
+    }
+    [data-contrast="high"] .hero-section {
+      background: #000000;
+    }
+
+    .hero-grid-pattern {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(#0f766e 0.65px, transparent 0.65px);
+      background-size: 24px 24px;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    .hero-badge-official {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(15, 118, 110, 0.08);
+      color: var(--rs-primary-dark);
+      border: 1px solid rgba(15, 118, 110, 0.2);
+      padding: 0.4rem 0.95rem;
+      border-radius: 9999px;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-size: clamp(2.3rem, 5vw, 3.8rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+      color: var(--rs-ink);
+      margin-bottom: 1.25rem;
+    }
+    .hero-title .gradient-text {
+      background: linear-gradient(135deg, var(--rs-primary) 0%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-lead {
+      font-size: 1.15rem;
+      color: var(--rs-ink-secondary);
+      line-height: 1.65;
+      max-width: 580px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-mockup-card {
+      background: var(--rs-surface);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: var(--rs-radius-xl);
+      box-shadow: var(--rs-shadow-xl);
+      padding: 1.75rem;
+      position: relative;
+      transition: var(--rs-transition);
+    }
+    .hero-mockup-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .route-pill-badge {
+      background: #f0fdf4;
+      color: #166534;
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid #bbf7d0;
+    }
+
+    .quick-tracker-card {
+      margin-top: -2.5rem;
+      position: relative;
+      z-index: 20;
+    }
+    .tracker-box {
+      background: var(--rs-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-lg);
+      padding: 1.5rem 1.75rem;
+      box-shadow: var(--rs-shadow-lg);
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--rs-ink);
+      margin-bottom: 0.5rem;
+    }
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--rs-muted);
+      max-width: 650px;
+      margin: 0 auto 3rem;
+    }
+
+    .step-card {
+      background: var(--rs-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-lg);
+      padding: 2rem 1.5rem;
+      height: 100%;
+      position: relative;
+      transition: var(--rs-transition);
+      overflow: hidden;
+    }
+    .step-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--rs-shadow-lg);
+      border-color: var(--rs-accent);
+    }
+    .step-number {
+      font-size: 2.75rem;
+      font-weight: 900;
+      line-height: 1;
+      color: rgba(15, 118, 110, 0.12);
+      position: absolute;
+      top: 1rem;
+      right: 1.25rem;
+      letter-spacing: -0.05em;
+    }
+    .step-icon-box {
+      width: 54px;
+      height: 54px;
+      border-radius: var(--rs-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+      background: var(--rs-primary-light);
+      color: var(--rs-primary);
+    }
+
+    .bento-card {
+      background: var(--rs-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-lg);
+      padding: 2rem;
+      height: 100%;
+      transition: var(--rs-transition);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .bento-card:hover {
+      box-shadow: var(--rs-shadow-md);
+      border-color: #cbd5e1;
+      transform: translateY(-3px);
+    }
+    .bento-featured {
+      background: linear-gradient(135deg, #093733 0%, #0f766e 100%);
+      color: #ffffff;
+      border: none;
+    }
+    .bento-featured .text-muted {
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+    .bento-featured h4, .bento-featured h3, .bento-featured h5 {
+      color: #ffffff !important;
+    }
+
+    .destination-card {
+      background: var(--rs-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-lg);
+      padding: 1.5rem;
+      transition: var(--rs-transition);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .destination-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--rs-shadow-lg);
+      border-color: var(--rs-primary);
+    }
+    .dest-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+    }
+
+    .contact-card {
+      background: var(--rs-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-md);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      transition: var(--rs-transition);
+      text-decoration: none;
+      color: inherit;
+    }
+    .contact-card:hover {
+      border-color: var(--rs-primary);
+      box-shadow: var(--rs-shadow-sm);
+      transform: translateY(-2px);
+      color: inherit;
+    }
+    .contact-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--rs-radius-md);
+      background: var(--rs-primary-light);
+      color: var(--rs-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+
+    .footer-rotasaude {
+      background: #092c28;
+      color: #cbd5e1;
+      padding: 4rem 0 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.92rem;
+    }
+    .footer-rotasaude a {
+      color: #99f6e4;
+      text-decoration: none;
+      transition: var(--rs-transition);
+    }
+    .footer-rotasaude a:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+    .footer-divider {
+      border-color: rgba(255, 255, 255, 0.12);
+      margin: 2.5rem 0 1.5rem;
+    }
+  </style>
+</head>
+<body x-data="{ contrast: false, fontSize: 100, trackingProtocol: '', trackingResult: null, searchSubmitted: false }">
+
+  <!-- BARRA GOVERNAMENTAL SUPERIOR -->
+  <div class="top-gov-bar">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div class="d-flex align-items-center gap-3">
+        <span><i class="bi bi-geo-alt-fill text-warning me-1"></i> Estância Turística de Olímpia — SP</span>
+        <span class="d-none d-md-inline opacity-50">|</span>
+        <span class="d-none d-md-inline">Secretaria Municipal de Saúde</span>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <button type="button" class="btn btn-sm text-light p-0 d-flex align-items-center gap-1" 
+                @click="contrast = !contrast; document.documentElement.setAttribute('data-contrast', contrast ? 'high' : 'normal')" 
+                title="Alternar Alto Contraste">
+          <i class="bi bi-circle-half"></i> <span class="d-none d-sm-inline">Alto Contraste</span>
+        </button>
+        <span class="opacity-50">|</span>
+        <div class="d-flex align-items-center gap-1">
+          <button type="button" class="btn btn-sm text-light p-0" 
+                  @click="if(fontSize > 90) { fontSize -= 5; document.body.style.fontSize = fontSize + '%'; }" 
+                  title="Diminuir texto">A-</button>
+          <span class="small px-1">Fonte</span>
+          <button type="button" class="btn btn-sm text-light p-0" 
+                  @click="if(fontSize < 120) { fontSize += 5; document.body.style.fontSize = fontSize + '%'; }" 
+                  title="Aumentar texto">A+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVBAR PRINCIPAL MODERNA -->
+  <nav class="navbar navbar-expand-lg navbar-rotasaude sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-3" href="{% url 'home' %}">
+        <div class="brand-logo-box">
+          <i class="bi bi-heart-pulse-fill"></i>
+        </div>
+        <div>
+          <span class="brand-title">RotaSaúde</span>
+          <span class="brand-subtitle">Olímpia / SP</span>
+        </div>
+      </a>
+
+      <div class="d-none d-xl-flex ms-3">
+        <span class="status-pulse-pill">
+          <span class="pulse-dot"></span>
+          Frota em Operação Normal
+        </span>
+      </div>
+
+      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Abrir Navegação">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-1">
+          <li class="nav-item"><a class="nav-link active" href="#inicio">Início</a></li>
+          <li class="nav-item"><a class="nav-link" href="#consulta">Consultar Viagem</a></li>
+          <li class="nav-item"><a class="nav-link" href="#como-funciona">Como Funciona</a></li>
+          <li class="nav-item"><a class="nav-link" href="#destinos">Destinos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#diferenciais">Compromisso</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contato">Canais</a></li>
+          <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <a href="{% url 'lista_veiculos' %}" class="btn btn-rs-primary w-100">
+              <i class="bi bi-truck"></i>
+              <span>Gerenciar Frota</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION PRINCIPAL -->
+  <section id="inicio" class="hero-section">
+    <div class="hero-grid-pattern"></div>
+    <div class="container position-relative">
+      <div class="row align-items-center g-5">
+        
+        <div class="col-lg-7">
+          <div class="hero-badge-official">
+            <i class="bi bi-shield-check text-success fs-5"></i>
+            <span>Plataforma Oficial de Transporte Sanitário · Olímpia</span>
+          </div>
+          
+          <h1 class="hero-title">
+            Transporte de saúde com <span class="gradient-text">dignidade</span>, pontualidade e segurança.
+          </h1>
+          
+          <p class="hero-lead">
+            Modernizamos o agendamento de deslocamentos para consultas, exames, hemodiálise e oncologia nos principais centros de referência médica de Barretos, Rio Preto e região.
+          </p>
+
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <a href="{% url 'disponibilidade_veiculo' %}" class="btn btn-rs-primary btn-lg">
+              <i class="bi bi-calendar2-check-fill"></i>
+              <span>Registrar Disponibilidade</span>
+            </a>
+            <a href="{% url 'lista_veiculos' %}" class="btn btn-rs-secondary btn-lg">
+              <i class="bi bi-card-checklist me-1"></i> Acessar Frota
+            </a>
+          </div>
+
+          <div class="row g-3 pt-3 border-top">
+            <div class="col-sm-4">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <span class="small fw-semibold text-secondary">Sem filas físicas na madrugada</span>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <span class="small fw-semibold text-secondary">Zero superlotação garantida</span>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <span class="small fw-semibold text-secondary">Embarque residencial acessível</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-5">
+          <div class="hero-mockup-card">
+            <div class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
+              <div>
+                <span class="text-muted small d-block">Próxima Saída Programada</span>
+                <strong class="fs-6 text-dark">Linha Barretos — Especial Oncologia</strong>
+              </div>
+              <span class="route-pill-badge">
+                <i class="bi bi-clock-fill me-1"></i> 05:40
+              </span>
+            </div>
+
+            <div class="d-flex align-items-center gap-3 mb-3 p-3 rounded-3" style="background: #f1f5f9;">
+              <div class="p-2 rounded-3 bg-white text-teal shadow-sm text-center" style="min-width: 50px;">
+                <i class="bi bi-truck-front-fill fs-4 text-success"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <span class="fw-bold small text-dark">Van Master 04 (Adaptada)</span>
+                  <span class="badge bg-success-subtle text-success">Confirmada</span>
+                </div>
+                <div class="text-muted small mt-1">
+                  <i class="bi bi-geo-alt-fill text-danger"></i> Destino: Hospital de Amor (Fundação Pio XII)
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="d-flex justify-content-between text-muted small mb-1">
+                <span>Ocupação Segura da Frota:</span>
+                <strong class="text-dark">12 / 16 Lugares</strong>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <div class="form-text mt-1 text-muted" style="font-size: 0.75rem;">
+                <i class="bi bi-shield-lock-fill text-success me-1"></i> Trava digital anti-superlotação ativada (1 vaga = 1 assento reservado).
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 pt-2 border-top">
+              <span class="badge bg-light text-secondary border">
+                <i class="bi bi-universal-access me-1 text-primary"></i> 1 Cadeirante
+              </span>
+              <span class="badge bg-light text-secondary border">
+                <i class="bi bi-people me-1 text-primary"></i> 4 Acompanhantes
+              </span>
+              <span class="badge bg-light text-secondary border">
+                <i class="bi bi-shield-check me-1 text-success"></i> Higienizada
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- WIDGET DE CONSULTA RÁPIDA DE PROTOCOLO -->
+  <section id="consulta" class="quick-tracker-card container">
+    <div class="tracker-box">
+      <div class="row align-items-center g-3">
+        <div class="col-lg-4">
+          <div class="d-flex align-items-center gap-3">
+            <div class="brand-logo-box flex-shrink-0" style="width: 48px; height: 48px;">
+              <i class="bi bi-search"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-0">Consulta Rápida de Viagem</h5>
+              <small class="text-muted">Acompanhe o status do agendamento sanitário</small>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-8">
+          <form @submit.prevent="
+            searchSubmitted = true;
+            if(trackingProtocol.length > 2) {
+              trackingResult = {
+                protocolo: trackingProtocol.toUpperCase(),
+                paciente: 'Maria Silva',
+                destino: 'Hospital de Amor — Barretos / SP',
+                data: '22/10/2026',
+                horario: '05:30',
+                status: 'Confirmado e Alocado',
+                embarque: 'Unidade Básica de Saúde — Centro'
+              };
+            } else {
+              trackingResult = null;
+            }
+          " class="row g-2">
+            <div class="col-sm-8">
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-upc-scan"></i></span>
+                <input type="text" class="form-control border-start-0 ps-0" 
+                       x-model="trackingProtocol" 
+                       placeholder="Digite o número do protocolo ou CPF do paciente" required>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <button type="submit" class="btn btn-rs-primary w-100">
+                <i class="bi bi-arrow-right-circle"></i>
+                <span>Verificar Status</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div x-show="searchSubmitted && trackingResult" x-cloak class="mt-4 pt-3 border-top">
+        <div class="alert alert-success d-flex flex-wrap justify-content-between align-items-center gap-3 mb-0 py-3 rounded-3">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="badge bg-success">Status: <span x-text="trackingResult.status"></span></span>
+              <span class="text-muted small">Protocolo: <strong x-text="trackingResult.protocolo"></strong></span>
+            </div>
+            <div class="fw-bold fs-6 text-dark" x-text="trackingResult.destino"></div>
+            <div class="small text-secondary mt-1">
+              <i class="bi bi-calendar3 me-1"></i> Data: <strong x-text="trackingResult.data"></strong> às <strong x-text="trackingResult.horario"></strong> 
+              <span class="mx-2">•</span> 
+              <i class="bi bi-geo-alt me-1"></i> Embarque: <span x-text="trackingResult.embarque"></span>
+            </div>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-success" @click="searchSubmitted = false">
+            <i class="bi bi-x-lg me-1"></i> Fechar Consulta
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA EM 4 ETAPAS -->
+  <section id="como-funciona" class="py-5 my-lg-5">
+    <div class="container py-4">
+      <div class="text-center">
+        <span class="status-pulse-pill mb-2">Fluxo Humanizado</span>
+        <h2 class="section-title">Como funciona o atendimento</h2>
+        <p class="section-subtitle">
+          Um processo transparente, auditável e simples em 4 passos para garantir o cuidado de quem você ama.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        
+        <div class="col-md-6 col-lg-3">
+          <div class="step-card">
+            <span class="step-number">01</span>
+            <div class="step-icon-box">
+              <i class="bi bi-file-earmark-medical-fill"></i>
+            </div>
+            <h5 class="fw-bold mb-2">1. Solicitação</h5>
+            <p class="text-muted small mb-0">
+              Envio prévio de data, comprovante e laudo da consulta médica pelo portal ou diretamente na sua Unidade de Saúde (UBS).
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="step-card">
+            <span class="step-number">02</span>
+            <div class="step-icon-box" style="background: #e0f2fe; color: #0284c7;">
+              <i class="bi bi-clipboard2-pulse-fill"></i>
+            </div>
+            <h5 class="fw-bold mb-2">2. Triagem Humanizada</h5>
+            <p class="text-muted small mb-0">
+              A equipe da Regulação analisa a especialidade, define os acompanhantes legais e autoriza embarque domiciliar em caso de mobilidade reduzida.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="step-card">
+            <span class="step-number">03</span>
+            <div class="step-icon-box" style="background: #fef3c7; color: #d97706;">
+              <i class="bi bi-diagram-3-fill"></i>
+            </div>
+            <h5 class="fw-bold mb-2">3. Escala Segura</h5>
+            <p class="text-muted small mb-0">
+              Alocação automática em veículo apropriado (van acessível, ambulância ou veículo leve), com checagem anti-superlotação.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="step-card">
+            <span class="step-number">04</span>
+            <div class="step-icon-box" style="background: #ecfdf5; color: #059669;">
+              <i class="bi bi-shield-fill-check"></i>
+            </div>
+            <h5 class="fw-bold mb-2">4. Viagem Confortável</h5>
+            <p class="text-muted small mb-0">
+              Embarque pontual e seguro, motoristas capacitados para transporte de saúde e retorno garantido com respeito e acolhimento.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- DESTINOS SANITÁRIOS -->
+  <section id="destinos" class="py-5" style="background-color: #f1f5f9;">
+    <div class="container py-4">
+      <div class="text-center">
+        <span class="status-pulse-pill mb-2">Rotas Intermunicipais</span>
+        <h2 class="section-title">Destinos Sanitários Diários</h2>
+        <p class="section-subtitle">
+          Atendemos os principais polos hospitalares de média e alta complexidade do Estado de São Paulo.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        
+        <div class="col-md-4">
+          <div class="destination-card h-100">
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-success text-white dest-badge">Frequência Diária</span>
+                <span class="text-muted small"><i class="bi bi-clock me-1"></i> Saídas às 05:40 e 11:30</span>
+              </div>
+              <h4 class="fw-bold text-dark mb-1">Barretos / SP</h4>
+              <p class="text-success fw-semibold small mb-3">Hospital de Amor (Fundação Pio XII)</p>
+              <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-4">
+                <li><i class="bi bi-check2-circle text-success me-2"></i>Centro de Tratamento Oncológico</li>
+                <li><i class="bi bi-check2-circle text-success me-2"></i>Consultas Especializadas e Radioterapia</li>
+                <li><i class="bi bi-check2-circle text-success me-2"></i>Retorno após término dos procedimentos</li>
+              </ul>
+            </div>
+            <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+              <span class="small text-muted">Aprox. 48 km</span>
+              <span class="fw-bold small text-primary"><i class="bi bi-shield-check"></i> Rota Segura</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="destination-card h-100">
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-success text-white dest-badge">Frequência Diária</span>
+                <span class="text-muted small"><i class="bi bi-clock me-1"></i> Saídas às 05:30 e 12:00</span>
+              </div>
+              <h4 class="fw-bold text-dark mb-1">São José do Rio Preto / SP</h4>
+              <p class="text-primary fw-semibold small mb-3">Hospital de Base (HB) e Lucy Montoro</p>
+              <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-4">
+                <li><i class="bi bi-check2-circle text-primary me-2"></i>Hemodiálise e Cirurgias Eletivas</li>
+                <li><i class="bi bi-check2-circle text-primary me-2"></i>Reabilitação Física e Hospital da Criança</li>
+                <li><i class="bi bi-check2-circle text-primary me-2"></i>Exames de Ressonância e Tomografia</li>
+              </ul>
+            </div>
+            <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+              <span class="small text-muted">Aprox. 55 km</span>
+              <span class="fw-bold small text-primary"><i class="bi bi-shield-check"></i> Rota Segura</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="destination-card h-100">
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-secondary text-white dest-badge">Sob Programação</span>
+                <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i> Conforme Agendamento</span>
+              </div>
+              <h4 class="fw-bold text-dark mb-1">Ribeirão Preto e Capital</h4>
+              <p class="text-secondary fw-semibold small mb-3">Hospitais das Clínicas (HC) e Centros Estaduais</p>
+              <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-4">
+                <li><i class="bi bi-check2-circle text-secondary me-2"></i>Procedimentos de Altíssima Complexidade</li>
+                <li><i class="bi bi-check2-circle text-secondary me-2"></i>Tratamentos Raros e Transplantes</li>
+                <li><i class="bi bi-check2-circle text-secondary me-2"></i>Apoio de motoristas especializados</li>
+              </ul>
+            </div>
+            <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+              <span class="small text-muted">Polos Estaduais</span>
+              <span class="fw-bold small text-secondary"><i class="bi bi-shield-check"></i> Rota Especial</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- BENTO GRID: DIFERENCIAIS -->
+  <section id="diferenciais" class="py-5 my-lg-5">
+    <div class="container py-4">
+      <div class="text-center">
+        <span class="status-pulse-pill mb-2">Excelência Pública</span>
+        <h2 class="section-title">Compromisso com o respeito ao cidadão</h2>
+        <p class="section-subtitle">
+          Eliminamos os cadernos manuais vulneráveis para oferecer uma experiência com rastreabilidade, privacidade e conforto total.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        
+        <div class="col-lg-7">
+          <div class="bento-card bento-featured">
+            <div>
+              <div class="d-inline-flex p-3 rounded-3 bg-white text-dark mb-4 shadow-sm">
+                <i class="bi bi-universal-access fs-2" style="color: #0f766e;"></i>
+              </div>
+              <h3 class="fw-bold mb-3">Acessibilidade Total e Embarque Domiciliar</h3>
+              <p class="text-muted mb-4 fs-6">
+                Pacientes em pós-operatório, cadeirantes ou com mobilidade severamente reduzida contam com vans adaptadas equipadas com plataforma elevatória e embarque realizado na porta de suas residências.
+              </p>
+            </div>
+            <div class="d-flex flex-wrap gap-3 pt-3 border-top border-white-50">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-accent"></i>
+                <span class="small">Elevador eletro-hidráulico</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-accent"></i>
+                <span class="small">Fixadores universais de cadeira de rodas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-5">
+          <div class="bento-card">
+            <div>
+              <div class="step-icon-box mb-3">
+                <i class="bi bi-shield-lock-fill"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-2">Privacidade Criptográfica (LGPD)</h5>
+              <p class="text-muted small mb-0">
+                Laudos médicos, diagnósticos e Códigos Internacionais de Doenças (CIDs) são cifrados com AES-128 Fernet em repouso. Somente profissionais autorizados da Regulação Médica possuem acesso estrito aos dados clínicos.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-top">
+              <span class="badge bg-light text-success border">
+                <i class="bi bi-lock me-1"></i> 100% Conforme LGPD em Saúde
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="bento-card">
+            <div>
+              <div class="step-icon-box mb-3" style="background: #fef2f2; color: #dc2626;">
+                <i class="bi bi-speedometer2"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-2">Garantia Rigorosa de Zero Superlotação</h5>
+              <p class="text-muted small mb-0">
+                O sistema impede matematicamente que qualquer veículo ultrapasse sua capacidade nominal homologada. Cada paciente e seu acompanhante têm assento individual garantido com cinto de segurança de três pontos.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-top">
+              <span class="badge bg-light text-danger border">
+                <i class="bi bi-check-circle me-1"></i> Bloqueio Sistêmico de Excesso
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="bento-card">
+            <div>
+              <div class="step-icon-box mb-3" style="background: #ecfdf5; color: #059669;">
+                <i class="bi bi-droplet-half"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-2">Protocolos Sanitários e Desinfecção</h5>
+              <p class="text-muted small mb-0">
+                Todos os veículos passam por pausas programadas de higienização hospitalar antes e depois de cada percurso intermunicipal, protegendo imunodeprimidos e pacientes em tratamento oncológico.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-top">
+              <span class="badge bg-light text-success border">
+                <i class="bi bi-check-circle me-1"></i> Assepsia Hospitalar Padrão SUS
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTATOS OFICIAIS -->
+  <section id="contato" class="py-5" style="background: #f8fafc; border-top: 1px solid var(--rs-border);">
+    <div class="container py-4">
+      <div class="text-center mb-5">
+        <span class="status-pulse-pill mb-2">Fale Conosco</span>
+        <h2 class="section-title">Central de Atendimento ao Cidadão</h2>
+        <p class="section-subtitle">
+          Precisa tirar dúvidas sobre locais de saída, horários ou documentos? Nossa equipe está pronta para atendê-lo.
+        </p>
+      </div>
+
+      <div class="row g-4 justify-content-center">
+        
+        <div class="col-md-4">
+          <a href="tel:1732791400" class="contact-card">
+            <div class="contact-icon">
+              <i class="bi bi-telephone-fill"></i>
+            </div>
+            <div>
+              <small class="text-muted d-block fw-semibold">Telefone Oficial</small>
+              <strong class="fs-5 text-dark">(17) 3279-1400</strong>
+              <small class="text-secondary d-block mt-1">Ramal Transporte Sanitário</small>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-md-4">
+          <div class="contact-card">
+            <div class="contact-icon" style="background: #e0f2fe; color: #0284c7;">
+              <i class="bi bi-geo-alt-fill"></i>
+            </div>
+            <div>
+              <small class="text-muted d-block fw-semibold">Secretaria de Saúde</small>
+              <strong class="fs-6 text-dark">Rua Síria, Olímpia - SP</strong>
+              <small class="text-secondary d-block mt-1">Atendimento ao Público</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="contact-card">
+            <div class="contact-icon" style="background: #fef3c7; color: #d97706;">
+              <i class="bi bi-clock-fill"></i>
+            </div>
+            <div>
+              <small class="text-muted d-block fw-semibold">Horário de Funcionamento</small>
+              <strong class="fs-6 text-dark">Segunda a Sexta-feira</strong>
+              <small class="text-secondary d-block mt-1">Das 07:00 às 17:00</small>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- RODAPÉ INSTITUCIONAL -->
+  <footer class="footer-rotasaude">
+    <div class="container">
+      <div class="row g-4 align-items-center">
+        
+        <div class="col-lg-5">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="brand-logo-box" style="background: #ffffff; color: #0f766e;">
+              <i class="bi bi-heart-pulse-fill"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-0 text-white">RotaSaúde Olímpia</h5>
+              <small class="text-white-50">Transporte Sanitário com Dignidade, Conforto e Segurança</small>
+            </div>
+          </div>
+          <p class="small text-white-50 mb-0">
+            Plataforma municipal desenvolvida para a Estância Turística de Olímpia para humanizar e automatizar a gestão de viagens para tratamento de saúde fora do domicílio.
+          </p>
+        </div>
+
+        <div class="col-lg-3 offset-lg-1">
+          <h6 class="fw-bold text-white mb-3">Links Úteis</h6>
+          <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+            <li><a href="#como-funciona"><i class="bi bi-chevron-right me-1 small"></i> Como Funciona o Atendimento</a></li>
+            <li><a href="#destinos"><i class="bi bi-chevron-right me-1 small"></i> Destinos e Frequências Diárias</a></li>
+            <li><a href="#diferenciais"><i class="bi bi-chevron-right me-1 small"></i> Segurança e Acessibilidade</a></li>
+            <li><a href="{% url 'lista_veiculos' %}"><i class="bi bi-chevron-right me-1 small"></i> Gestão de Veículos</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-3">
+          <h6 class="fw-bold text-white mb-3">Gestão e Segurança</h6>
+          <p class="small text-white-50 mb-2">
+            Prefeitura Municipal da Estância Turística de Olímpia<br>
+            Secretaria Municipal de Saúde
+          </p>
+          <div class="d-flex align-items-center gap-2 mt-2">
+            <span class="badge bg-success text-white">Versão 2.0 Moderna</span>
+            <span class="badge bg-dark border border-white-50 text-white">LGPD Compliance</span>
+          </div>
+        </div>
+
+      </div>
+
+      <hr class="footer-divider">
+
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 small text-white-50">
+        <div>
+          &copy; 2026 RotaSaúde Olímpia. Todos os direitos reservados.
+        </div>
+        <div>
+          Conformidade com a Lei Geral de Proteção de Dados (Lei 13.709/2018)
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
