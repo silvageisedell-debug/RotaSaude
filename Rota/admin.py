@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import CategoriaRota
+
+
+@admin.register(CategoriaRota)
+class CategoriaRotaAdmin(admin.ModelAdmin):
+    list_display = ("nome", "prioridade")

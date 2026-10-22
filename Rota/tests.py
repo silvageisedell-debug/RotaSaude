@@ -1,11 +1,16 @@
 from datetime import timedelta
 
+from django.apps import apps
+from django.contrib.auth import get_user_model
+from django.db import IntegrityError, transaction
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 
 from Veiculo.models import Marca, Modelo, Veiculo
 
-from .models import Disponibilidade
+from .models import CategoriaRota, Disponibilidade
+from .seeds import semear_categorias
 
 
 class NovaDisponibilidadeTests(TestCase):
@@ -71,3 +76,50 @@ class NovaDisponibilidadeTests(TestCase):
         self.assertContains(resposta, hoje.strftime("%d/%m/%Y"))
         self.assertContains(resposta, "08:30")
         self.assertContains(resposta, "3 vagas")
+
+
+class CategoriaRotaTests(TestCase):
+    def test_nome_duplicado_nao_grava(self):
+        self.assertEqual(CategoriaRota.objects.filter(nome="Urgente").count(), 1)
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                CategoriaRota.objects.create(nome="Urgente", prioridade=9)
+        self.assertEqual(CategoriaRota.objects.filter(nome="Urgente").count(), 1)
+        self.assertEqual(CategoriaRota.objects.get(nome="Urgente").prioridade, 1)
+
+    def test_seed_cria_as_tres_categorias(self):
+        por_nome = dict(CategoriaRota.objects.values_list("nome", "prioridade"))
+        self.assertEqual(por_nome["Urgente"], 1)
+        self.assertEqual(por_nome["Prioritária"], 2)
+        self.assertEqual(por_nome["Eletiva"], 3)
+
+    def test_seed_repetido_nao_duplica(self):
+        antes = CategoriaRota.objects.count()
+        semear_categorias(apps, None)
+        semear_categorias(apps, None)
+        self.assertEqual(CategoriaRota.objects.count(), antes)
+        self.assertEqual(CategoriaRota.objects.filter(nome="Urgente").count(), 1)
+        self.assertEqual(CategoriaRota.objects.filter(nome="Prioritária").count(), 1)
+        self.assertEqual(CategoriaRota.objects.filter(nome="Eletiva").count(), 1)
+
+    def test_ordenacao_segue_prioridade_depois_nome(self):
+        nomes = list(CategoriaRota.objects.values_list("nome", flat=True))
+        self.assertEqual(nomes, ["Urgente", "Prioritária", "Eletiva"])
+
+    def test_mesma_prioridade_em_nomes_diferentes_e_aceita(self):
+        CategoriaRota.objects.create(nome="Retorno", prioridade=1)
+        self.assertEqual(CategoriaRota.objects.filter(prioridade=1).count(), 2)
+
+    def test_admin_lista_nome_e_prioridade(self):
+        usuario = get_user_model().objects.create_superuser(
+            username="igor",
+            email="igor@example.com",
+            password="senha-admin-123",
+        )
+        self.client.force_login(usuario)
+        resposta = self.client.get(reverse("admin:Rota_categoriarota_changelist"))
+        self.assertEqual(resposta.status_code, 200)
+        html = resposta.content.decode()
+        self.assertLess(html.index("Urgente"), html.index("Prioritária"))
+        self.assertLess(html.index("Prioritária"), html.index("Eletiva"))
+        self.assertContains(resposta, "Prioridade")
