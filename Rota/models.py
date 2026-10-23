@@ -23,3 +23,16 @@ class Disponibilidade(models.Model):
     class Meta:
         verbose_name = "Disponibilidade"
         verbose_name_plural = "Disponibilidades"
+
+
+class CategoriaRota(models.Model):
+    nome = models.CharField(max_length=50, unique=True, verbose_name="Nome")
+    prioridade = models.PositiveIntegerField(verbose_name="Prioridade")
+
+    def __str__(self):
+        return self.nome
+
+    class Meta:
+        verbose_name = "Categoria de rota"
+        verbose_name_plural = "Categorias de rota"
+        ordering = ["prioridade", "nome"]

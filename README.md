@@ -99,6 +99,7 @@ Todo o escopo que validou e desenhou decisões técnicas está documentado em de
 | ADR-014 | Adapter não entra no acesso ao banco |
 | ADR-015 | Pipeline da operação e distribuição das atividades |
 | ADR-017 | Disponibilidade do veículo no app Rota, com validação na view |
+| ADR-018 | Categorias de rota com prioridade, cadastro no admin e seed |
 
 ## Como Rodar o Sistema
 
