@@ -36,3 +36,25 @@ class CategoriaRota(models.Model):
         verbose_name = "Categoria de rota"
         verbose_name_plural = "Categorias de rota"
         ordering = ["prioridade", "nome"]
+
+
+class Viagem(models.Model):
+    disponibilidade = models.ForeignKey(
+        Disponibilidade,
+        on_delete=models.PROTECT,
+        related_name="viagens",
+    )
+    categoria = models.ForeignKey(
+        CategoriaRota,
+        on_delete=models.PROTECT,
+        related_name="viagens",
+    )
+    origem = models.CharField(max_length=120, verbose_name="Origem")
+    destino = models.CharField(max_length=120, verbose_name="Destino")
+
+    def __str__(self):
+        return f"{self.origem} → {self.destino} ({self.categoria})"
+
+    class Meta:
+        verbose_name = "Viagem"
+        verbose_name_plural = "Viagens"

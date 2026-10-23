@@ -3,13 +3,14 @@ from datetime import timedelta
 from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
+from django.db.models import ProtectedError
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
 from Veiculo.models import Marca, Modelo, Veiculo
 
-from .models import CategoriaRota, Disponibilidade
+from .models import CategoriaRota, Disponibilidade, Viagem
 from .seeds import semear_categorias
 
 
@@ -123,3 +124,85 @@ class CategoriaRotaTests(TestCase):
         self.assertLess(html.index("Urgente"), html.index("Prioritária"))
         self.assertLess(html.index("Prioritária"), html.index("Eletiva"))
         self.assertContains(resposta, "Prioridade")
+
+
+class PublicarRotaTests(TestCase):
+    def setUp(self):
+        marca = Marca.objects.create(nome="Fiat")
+        modelo = Modelo.objects.create(nome="Ducato", marca=marca)
+        veiculo = Veiculo.objects.create(
+            placa="RTE1A23",
+            modelo=modelo,
+            ano=2023,
+            chassi="76543210987654321",
+            renavam="10987654321",
+            capacidade=8,
+        )
+        self.disponibilidade = Disponibilidade.objects.create(
+            veiculo=veiculo,
+            data=timezone.localdate(),
+            horario="09:00",
+            vagas=4,
+        )
+        self.categoria = CategoriaRota.objects.get(nome="Urgente")
+        self.url = "/rotas/nova/"
+
+    def _post(self, **extras):
+        dados = {
+            "disponibilidade": self.disponibilidade.pk,
+            "categoria": self.categoria.pk,
+            "origem": "UBS Centro",
+            "destino": "Hospital Municipal",
+        }
+        dados.update(extras)
+        return self.client.post(self.url, dados)
+
+    def test_post_sem_origem_nao_grava(self):
+        resposta = self._post(origem="")
+        self.assertEqual(Viagem.objects.count(), 0)
+        self.assertContains(resposta, "Informe a origem.")
+
+    def test_post_sem_destino_nao_grava(self):
+        resposta = self._post(destino="")
+        self.assertEqual(Viagem.objects.count(), 0)
+        self.assertContains(resposta, "Informe o destino.")
+
+    def test_post_sem_disponibilidade_nao_grava(self):
+        resposta = self._post(disponibilidade="")
+        self.assertEqual(Viagem.objects.count(), 0)
+        self.assertContains(resposta, "Selecione uma disponibilidade.")
+
+    def test_post_sem_categoria_nao_grava(self):
+        resposta = self._post(categoria="")
+        self.assertEqual(Viagem.objects.count(), 0)
+        self.assertContains(resposta, "Selecione uma categoria.")
+
+    def test_post_valido_grava_vinculos(self):
+        resposta = self._post()
+        self.assertEqual(Viagem.objects.count(), 1)
+        viagem = Viagem.objects.get()
+        self.assertEqual(viagem.disponibilidade, self.disponibilidade)
+        self.assertEqual(viagem.categoria, self.categoria)
+        self.assertEqual(viagem.origem, "UBS Centro")
+        self.assertEqual(viagem.destino, "Hospital Municipal")
+        self.assertContains(resposta, "Rota publicada")
+        self.assertNotContains(resposta, 'name="placa"')
+        self.assertNotContains(resposta, 'name="categoria_nome"')
+
+    def test_lista_mostra_origem_e_destino(self):
+        self._post()
+        resposta = self.client.get("/rotas/")
+        self.assertEqual(resposta.status_code, 200)
+        self.assertContains(resposta, "UBS Centro")
+        self.assertContains(resposta, "Hospital Municipal")
+        self.assertContains(resposta, "RTE1A23")
+        self.assertContains(resposta, "Urgente")
+
+    def test_protect_impede_apagar_disponibilidade_e_categoria_em_uso(self):
+        self._post()
+        viagem = Viagem.objects.get()
+        with self.assertRaises(ProtectedError):
+            viagem.disponibilidade.delete()
+        with self.assertRaises(ProtectedError):
+            viagem.categoria.delete()
+        self.assertEqual(Viagem.objects.count(), 1)
