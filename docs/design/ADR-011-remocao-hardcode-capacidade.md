@@ -1,4 +1,4 @@
-# ADR-011: Remoção de Limites Rígidos (Hardcoded) na Capacidade de Veículos
+# ADR 011 — Remoção de limites rígidos (hardcoded) na capacidade de veículos
 
 ## 1. Contexto e Problema
 Na versão inicial do modelo `Veiculo` e no seu respectivo formulário `VeiculoForm`, a capacidade de ocupantes foi limitada estaticamente através de *validators* definidos em código, variando entre um mínimo de 2 e um máximo de 5 lugares (hardcoded).

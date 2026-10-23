@@ -1,4 +1,4 @@
-# ADR 012: Planejamento de Extração de Service no Rota Saúde
+# ADR 012 — Planejamento de extração de Service no Rota Saúde
 
 **Status:** Planejado  
 **Data:** 21/10/2026 *(ou a data correspondente ao seu registro)*  

@@ -1,4 +1,4 @@
-# ADR-013: Interface e Registro de Disponibilidade de Veículo
+# ADR 013 — Interface e registro de disponibilidade de veículo
 
 ## 1. Contexto e Problema
 

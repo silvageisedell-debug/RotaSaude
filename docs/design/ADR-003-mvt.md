@@ -1,4 +1,4 @@
-# ADR 003-MVT — Lista de veículos no padrão MVT, sem cadastro pelo admin
+# ADR 003 — Lista de veículos no padrão MVT, sem cadastro pelo admin
 
 ## Contexto
 
