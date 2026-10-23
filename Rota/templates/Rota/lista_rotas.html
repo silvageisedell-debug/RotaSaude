@@ -26,6 +26,8 @@
           <th>Data</th>
           <th>Horário</th>
           <th>Categoria</th>
+          <th>Paradas</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -37,6 +39,16 @@
           <td>{{ v.disponibilidade.data|date:"d/m/Y" }}</td>
           <td>{{ v.disponibilidade.horario|time:"H:i" }}</td>
           <td>{{ v.categoria }}</td>
+          <td>
+            {% for parada in v.paradas.all %}
+            <span class="d-block">{{ parada.ordem }}. {{ parada.local }}</span>
+            {% empty %}
+            <span class="text-secondary">—</span>
+            {% endfor %}
+          </td>
+          <td class="text-nowrap">
+            <a href="{% url 'editar_rota' v.pk %}">editar</a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>

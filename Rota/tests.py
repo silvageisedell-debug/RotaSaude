@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from Veiculo.models import Marca, Modelo, Veiculo
 
-from .models import CategoriaRota, Disponibilidade, Viagem
+from .models import CategoriaRota, Disponibilidade, Parada, Viagem
 from .seeds import semear_categorias
 
 
@@ -206,3 +206,115 @@ class PublicarRotaTests(TestCase):
         with self.assertRaises(ProtectedError):
             viagem.categoria.delete()
         self.assertEqual(Viagem.objects.count(), 1)
+
+
+class ItinerarioTests(TestCase):
+    def setUp(self):
+        marca = Marca.objects.create(nome="Renault")
+        modelo = Modelo.objects.create(nome="Master", marca=marca)
+        veiculo = Veiculo.objects.create(
+            placa="ITI9B87",
+            modelo=modelo,
+            ano=2022,
+            chassi="11111111111111111",
+            renavam="22222222222",
+            capacidade=12,
+        )
+        self.disponibilidade = Disponibilidade.objects.create(
+            veiculo=veiculo,
+            data=timezone.localdate(),
+            horario="07:15",
+            vagas=6,
+        )
+        self.categoria = CategoriaRota.objects.get(nome="Eletiva")
+
+    def _dados(self, paradas, **extras):
+        dados = {
+            "disponibilidade": self.disponibilidade.pk,
+            "categoria": self.categoria.pk,
+            "origem": "UBS Centro",
+            "destino": "Hospital Municipal",
+            "paradas-TOTAL_FORMS": str(len(paradas)),
+            "paradas-INITIAL_FORMS": "0",
+            "paradas-MIN_NUM_FORMS": "0",
+            "paradas-MAX_NUM_FORMS": "1000",
+        }
+        for indice, (local, ordem) in enumerate(paradas):
+            dados[f"paradas-{indice}-local"] = local
+            dados[f"paradas-{indice}-ordem"] = ordem
+        dados.update(extras)
+        return dados
+
+    def test_duas_paradas_gravam_na_ordem_numerica(self):
+        resposta = self.client.post(
+            "/rotas/nova/",
+            self._dados([("Hospital Municipal", 2), ("UBS Centro", 1)]),
+        )
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(Viagem.objects.count(), 1)
+        viagem = Viagem.objects.get()
+        self.assertEqual(
+            list(viagem.paradas.values_list("ordem", "local")),
+            [(1, "UBS Centro"), (2, "Hospital Municipal")],
+        )
+        lista = self.client.get("/rotas/")
+        html = lista.content.decode()
+        self.assertLess(html.index("1. UBS Centro"), html.index("2. Hospital Municipal"))
+
+    def test_ordem_repetida_na_mesma_viagem_nao_grava(self):
+        resposta = self.client.post(
+            "/rotas/nova/",
+            self._dados([("UBS Centro", 1), ("Hospital Municipal", 1)]),
+        )
+        self.assertEqual(Viagem.objects.count(), 0)
+        self.assertEqual(Parada.objects.count(), 0)
+        self.assertContains(resposta, "A ordem da parada não pode se repetir na mesma rota.")
+
+    def test_mesma_ordem_em_viagens_diferentes_e_aceita(self):
+        self.client.post("/rotas/nova/", self._dados([("UBS Centro", 1)]))
+        self.client.post(
+            "/rotas/nova/",
+            self._dados(
+                [("Hospital Municipal", 1)],
+                origem="Clínica Norte",
+                destino="Laboratório",
+            ),
+        )
+        self.assertEqual(Viagem.objects.count(), 2)
+        self.assertEqual(Parada.objects.filter(ordem=1).count(), 2)
+
+    def test_editar_inclui_parada(self):
+        self.client.post(
+            "/rotas/nova/",
+            self._dados([("UBS Centro", 1), ("Hospital Municipal", 2)]),
+        )
+        viagem = Viagem.objects.get()
+        resposta = self.client.post(
+            f"/rotas/{viagem.pk}/editar/",
+            self._dados(
+                [
+                    ("UBS Centro", 1),
+                    ("Hospital Municipal", 2),
+                    ("Farmácia Popular", 3),
+                ]
+            ),
+        )
+        self.assertContains(resposta, "Rota atualizada")
+        self.assertEqual(
+            list(viagem.paradas.values_list("ordem", "local")),
+            [
+                (1, "UBS Centro"),
+                (2, "Hospital Municipal"),
+                (3, "Farmácia Popular"),
+            ],
+        )
+
+    def test_editar_com_ordem_repetida_nao_altera(self):
+        self.client.post("/rotas/nova/", self._dados([("UBS Centro", 1)]))
+        viagem = Viagem.objects.get()
+        resposta = self.client.post(
+            f"/rotas/{viagem.pk}/editar/",
+            self._dados([("UBS Centro", 1), ("Hospital Municipal", 1)]),
+        )
+        self.assertContains(resposta, "A ordem da parada não pode se repetir na mesma rota.")
+        self.assertEqual(list(viagem.paradas.values_list("ordem", "local")), [(1, "UBS Centro")])

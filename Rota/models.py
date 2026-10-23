@@ -58,3 +58,27 @@ class Viagem(models.Model):
     class Meta:
         verbose_name = "Viagem"
         verbose_name_plural = "Viagens"
+
+
+class Parada(models.Model):
+    viagem = models.ForeignKey(
+        Viagem,
+        on_delete=models.CASCADE,
+        related_name="paradas",
+    )
+    ordem = models.PositiveIntegerField(verbose_name="Ordem")
+    local = models.CharField(max_length=120, verbose_name="Local")
+
+    def __str__(self):
+        return f"{self.ordem}. {self.local}"
+
+    class Meta:
+        verbose_name = "Parada"
+        verbose_name_plural = "Paradas"
+        ordering = ["ordem"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["viagem", "ordem"],
+                name="rota_parada_ordem_unica",
+            )
+        ]
