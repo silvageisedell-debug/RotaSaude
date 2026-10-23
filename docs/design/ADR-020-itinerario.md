@@ -44,4 +44,4 @@ Texto redigido com apoio de IA, em tom formal e informativo, seguindo as boas pr
 
 ## Commit
 
-A preencher no commit que versionar este arquivo.
+a72026b
