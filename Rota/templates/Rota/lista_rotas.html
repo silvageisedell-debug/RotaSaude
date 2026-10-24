@@ -1,0 +1,54 @@
+{% extends "Veiculo/base.html" %}
+
+{% block title %}Rotas · RotaSaúde{% endblock %}
+
+{% block content %}
+<!-- Bootstrap 5 nesta tela (tabela, empty state, botões) aplicado com apoio de IA. -->
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+  <div>
+    <h1 class="h3 mb-1">Rotas</h1>
+    <p class="text-secondary mb-0">Viagens publicadas a partir de uma disponibilidade e de uma categoria.</p>
+  </div>
+  <a class="btn btn-rs" href="{% url 'nova_rota' %}">
+    <i class="bi bi-plus-lg me-1"></i> Nova rota
+  </a>
+</div>
+
+{% if viagens %}
+<div class="card rs-card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0 rs-table">
+      <thead>
+        <tr>
+          <th>Origem</th>
+          <th>Destino</th>
+          <th>Veículo</th>
+          <th>Data</th>
+          <th>Horário</th>
+          <th>Categoria</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in viagens %}
+        <tr>
+          <td class="fw-semibold">{{ v.origem }}</td>
+          <td>{{ v.destino }}</td>
+          <td>{{ v.disponibilidade.veiculo }}</td>
+          <td>{{ v.disponibilidade.data|date:"d/m/Y" }}</td>
+          <td>{{ v.disponibilidade.horario|time:"H:i" }}</td>
+          <td>{{ v.categoria }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="rs-empty p-5 text-center">
+  <i class="bi bi-signpost-split fs-1 d-block mb-3"></i>
+  <h2 class="h5">Nenhuma rota publicada ainda.</h2>
+  <p class="mb-3">Publique a primeira rota escolhendo uma disponibilidade e uma categoria.</p>
+  <a class="btn btn-rs" href="{% url 'nova_rota' %}">Nova rota</a>
+</div>
+{% endif %}
+{% endblock %}

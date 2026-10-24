@@ -54,10 +54,10 @@ Veiculo/         app de domínio da frota
   static/css/    app.css
 
 Rota/            app da operação
-  models.py      Disponibilidade (FK para Veiculo, PROTECT)
-  views.py       nova_disponibilidade — validação de data e horário na view
-  urls.py        /disponibilidade/nova/
-  templates/     disponibilidade_nova.html
+  models.py      Disponibilidade (FK para Veiculo, PROTECT); CategoriaRota; Viagem
+  views.py       nova_disponibilidade; lista_rotas e nova_rota
+  urls.py        /disponibilidade/nova/, /rotas/, /rotas/nova/
+  templates/     disponibilidade_nova.html, lista_rotas.html, rota_nova.html
 ```
 
 ## Regras de Negócio Implementadas
@@ -66,6 +66,7 @@ Rota/            app da operação
 - Placa, chassi e Renavam devem ser únicos e exclusivos.
 - A exclusão em cascata é protegida: o `Modelo` pertence à `Marca`, e a deleção do Veículo possui a flag `PROTECT` para preservar logs. A disponibilidade também usa `PROTECT` no veículo.
 - Disponibilidade: a data não pode ser anterior a hoje e o horário é obrigatório. Essa checagem mora na view `nova_disponibilidade`, não no model.
+- Rota publicada (`Viagem`): origem e destino em texto, ligados a uma disponibilidade e a uma categoria já cadastradas (`PROTECT`). A tela não pede placa nem nome de categoria digitados.
 
 ## Rotas Mapeadas
 
@@ -77,6 +78,8 @@ Rota/            app da operação
 | `/Veiculo/<pk>/editar/` | `editar_veiculo` | Edição dos dados |
 | `/Veiculo/<pk>/apagar/` | `apagar_veiculo` | Confirmação em GET, apagado no POST |
 | `/disponibilidade/nova/` | `nova_disponibilidade` | Registrar disponibilidade e vagas |
+| `/rotas/` | `lista_rotas` | Lista das rotas publicadas |
+| `/rotas/nova/` | `nova_rota` | Publicar origem, destino, disponibilidade e categoria |
 
 ## Caderno de Design
 
@@ -100,6 +103,7 @@ Todo o escopo que validou e desenhou decisões técnicas está documentado em de
 | ADR-015 | Pipeline da operação e distribuição das atividades |
 | ADR-017 | Disponibilidade do veículo no app Rota, com validação na view |
 | ADR-018 | Categorias de rota com prioridade, cadastro no admin e seed |
+| ADR-019 | Publicar rota: model Viagem, origem, destino, disponibilidade e categoria |
 
 ## Como Rodar o Sistema
 
@@ -118,4 +122,4 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Acesso via `http://127.0.0.1:8000/Veiculo/`. A disponibilidade fica em `http://127.0.0.1:8000/disponibilidade/nova/`. (Garantir um superuser no `/admin/` e as modelagens de Marca, Modelo e Veículo registradas no banco).
+Acesso via `http://127.0.0.1:8000/Veiculo/`. A disponibilidade fica em `http://127.0.0.1:8000/disponibilidade/nova/`. As rotas ficam em `http://127.0.0.1:8000/rotas/`. (Garantir um superuser no `/admin/` e as modelagens de Marca, Modelo e Veículo registradas no banco).
