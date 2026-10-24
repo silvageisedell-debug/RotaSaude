@@ -1,0 +1,111 @@
+{% extends "Veiculo/base.html" %}
+
+{% block title %}Início · RotaSaúde{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <div>
+    <h1 class="h3 mb-1">Olá, {{ user.first_name|default:user.username }}</h1>
+    <p class="text-secondary mb-0">
+      {% if papel == "admin" %}Visão da frota, das rotas e das categorias.{% else %}Publique disponibilidade e acompanhe o itinerário.{% endif %}
+    </p>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <button class="btn btn-rs" type="button" data-bs-toggle="modal" data-bs-target="#modalDisponibilidade">Novo agendamento</button>
+    <a class="btn btn-outline-secondary" href="{% url 'nova_rota' %}">Despacho rápido</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="rs-metric p-4">
+      <span class="text-secondary">Veículos</span>
+      <strong>{{ total_veiculos }}</strong>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="rs-metric p-4">
+      <span class="text-secondary">Rotas</span>
+      <strong>{{ total_rotas }}</strong>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="rs-metric p-4">
+      <span class="text-secondary">Vagas hoje</span>
+      <strong>{{ vagas_hoje }}</strong>
+    </div>
+  </div>
+</div>
+
+<div class="card rs-card">
+  <div class="card-body p-4">
+    <h2 class="h5">Rotas recentes</h2>
+    {% if rotas_recentes %}
+    <ul class="list-unstyled mb-0">
+      {% for rota in rotas_recentes %}
+      <li class="d-flex justify-content-between gap-3 py-2 border-bottom">
+        <span>{{ rota.origem }} → {{ rota.destino }}</span>
+        <span class="text-secondary">{{ rota.categoria }} · {{ rota.disponibilidade.veiculo.placa }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="rs-empty p-4 text-center mt-3">
+      <i class="bi bi-signpost-split fs-1 d-block mb-3"></i>
+      <p class="mb-0">Nenhuma rota publicada ainda.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if papel == "admin" %}
+<p class="mt-4 mb-0"><a href="/admin/">Categorias e parâmetros no admin</a></p>
+{% endif %}
+
+<div class="modal fade" id="modalDisponibilidade" tabindex="-1" aria-labelledby="tituloAgendamento" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" action="{% url 'nova_disponibilidade' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="tituloAgendamento">Novo agendamento</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          {% if not veiculos %}
+          <p class="mb-0">Nenhum veículo cadastrado ainda.</p>
+          {% else %}
+          <div class="mb-3">
+            <label class="form-label" for="veiculo-modal">Veículo</label>
+            <select class="form-select" id="veiculo-modal" name="veiculo" required>
+              <option value="">Selecione um veículo</option>
+              {% for veiculo in veiculos %}
+              <option value="{{ veiculo.pk }}">{{ veiculo }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="data-modal">Data</label>
+            <input class="form-control" id="data-modal" name="data" type="date" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="horario-modal">Horário</label>
+            <input class="form-control" id="horario-modal" name="horario" type="time" required>
+          </div>
+          <div class="mb-0">
+            <label class="form-label" for="vagas-modal">Vagas</label>
+            <input class="form-control" id="vagas-modal" name="vagas" type="number" min="0" required>
+          </div>
+          {% endif %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          {% if veiculos %}
+          <button class="btn btn-rs" type="submit">Salvar</button>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

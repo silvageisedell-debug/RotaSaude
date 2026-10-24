@@ -45,6 +45,11 @@
             {% empty %}
             <span class="text-secondary">—</span>
             {% endfor %}
+            {% if v.calculo.ok and v.calculo.sequencia %}
+            <span class="d-block text-secondary small">{{ v.calculo.distancia_total_km }} km · {{ v.calculo.tempo_estimado_min }} min</span>
+            {% elif not v.calculo.ok %}
+            <span class="d-block text-danger small">{{ v.calculo.avisos.0 }}</span>
+            {% endif %}
           </td>
           <td class="text-nowrap">
             <a href="{% url 'editar_rota' v.pk %}">editar</a>

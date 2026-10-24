@@ -13,7 +13,7 @@
 <body class="d-flex flex-column min-vh-100">
   <nav class="navbar navbar-expand-lg navbar-dark rs-navbar">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold" href="{% url 'lista_veiculos' %}">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold" href="{% if user.is_authenticated %}{% url 'painel' %}{% else %}{% url 'entrar' %}{% endif %}">
         <span class="rs-brand-mark"><i class="bi bi-heart-pulse"></i></span>
         RotaSaúde
       </a>
@@ -21,19 +21,32 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="menuPrincipal">
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'painel' %}active{% endif %}" href="{% url 'painel' %}">Início</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'lista_veiculos' %}active{% endif %}" href="{% url 'lista_veiculos' %}">Veículos</a>
           </li>
+          {% if papel == "admin" %}
           <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'novo_veiculo' %}active{% endif %}" href="{% url 'novo_veiculo' %}">Novo veículo</a>
           </li>
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'nova_disponibilidade' %}active{% endif %}" href="{% url 'nova_disponibilidade' %}">Disponibilidade</a>
           </li>
           <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'lista_rotas' or request.resolver_match.url_name == 'nova_rota' or request.resolver_match.url_name == 'editar_rota' %}active{% endif %}" href="{% url 'lista_rotas' %}">Rotas</a>
           </li>
+          <li class="nav-item ms-lg-2">
+            <form method="post" action="{% url 'sair' %}">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-outline-light" type="submit">Sair</button>
+            </form>
+          </li>
+          {% endif %}
         </ul>
       </div>
     </div>
@@ -42,6 +55,17 @@
   <main class="container rs-page flex-grow-1">
     {% block content %}{% endblock %}
   </main>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    {% for message in messages %}
+    <div class="toast show text-bg-{% if 'error' in message.tags %}danger{% else %}success{% endif %} border-0" role="status">
+      <div class="d-flex">
+        <div class="toast-body">{{ message }}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 
   <footer class="rs-footer py-3 mt-auto">
     <div class="container text-center">

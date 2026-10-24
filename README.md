@@ -74,6 +74,8 @@ Rota/            app da operação
 
 | URL | Nome | Função |
 |---|---|---|
+| `/` | `painel` | Início, com métricas e agendamento em modal |
+| `/entrar/` | `entrar` | Login do administrador ou do atendente |
 | `/admin/` | — | Administração de fundos (equipe) |
 | `/Veiculo/` | `lista_veiculos` | Lista geral da frota |
 | `/Veiculo/nova/` | `novo_veiculo` | Realizar cadastro da frota |

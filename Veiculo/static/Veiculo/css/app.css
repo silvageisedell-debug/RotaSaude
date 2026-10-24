@@ -94,3 +94,16 @@ body {
   border-color: var(--rs-teal-dark);
   color: #fff;
 }
+
+.rs-metric {
+  background: var(--rs-card);
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(15, 118, 110, 0.08);
+}
+
+.rs-metric strong {
+  display: block;
+  font-size: 1.75rem;
+  color: var(--rs-teal-dark);
+}

@@ -9,9 +9,11 @@
     <h1 class="h3 mb-1">Veículos da frota</h1>
     <p class="text-secondary mb-0">Cadastro pela porta da frente — sem usar o admin.</p>
   </div>
+  {% if papel == "admin" %}
   <a class="btn btn-rs" href="{% url 'novo_veiculo' %}">
     <i class="bi bi-plus-lg me-1"></i> Novo veículo
   </a>
+  {% endif %}
 </div>
 
 {% if veiculos %}
@@ -26,7 +28,7 @@
           <th>Chassi</th>
           <th>Renavam</th>
           <th>Capacidade</th>
-          <th>Ações</th>
+          {% if papel == "admin" %}<th>Ações</th>{% endif %}
         </tr>
       </thead>
       <tbody>
@@ -37,12 +39,37 @@
           <td>{{ r.ano }}</td>
           <td>{{ r.chassi }}</td>
           <td>{{ r.renavam }}</td>
-          <td>{{ r.capacidade }}</td>
+          <td>
+            {{ r.capacidade }}
+            {% if r.capacidade <= 0 %}
+            <span class="badge text-bg-danger ms-1">Sem capacidade</span>
+            {% endif %}
+          </td>
+          {% if papel == "admin" %}
           <td class="text-nowrap">
             <a href="{% url 'editar_veiculo' r.pk %}">editar</a>
             <span class="text-secondary mx-1">·</span>
-            <a href="{% url 'apagar_veiculo' r.pk %}">apagar</a>
+            <button class="btn btn-link btn-sm p-0 align-baseline" type="button" data-bs-toggle="modal" data-bs-target="#apagar{{ r.pk }}">apagar</button>
+            <div class="modal fade" id="apagar{{ r.pk }}" tabindex="-1" aria-labelledby="tituloApagar{{ r.pk }}" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <form method="post" action="{% url 'apagar_veiculo' r.pk %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                      <h2 class="modal-title h5" id="tituloApagar{{ r.pk }}">Apagar {{ r.placa }}?</h2>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">O veículo sai da lista. Esta ação não desfaz.</div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                      <button class="btn btn-danger" type="submit">Apagar</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
           </td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
@@ -53,8 +80,10 @@
 <div class="rs-empty p-5 text-center">
   <i class="bi bi-ambulance fs-1 d-block mb-3"></i>
   <h2 class="h5">Nenhum veículo cadastrado ainda.</h2>
-  <p class="mb-3">Inclua o primeiro veículo da frota pelo formulário.</p>
+  <p class="mb-3">{% if papel == "admin" %}Inclua o primeiro veículo da frota pelo formulário.{% else %}A frota ainda não tem veículo cadastrado.{% endif %}</p>
+  {% if papel == "admin" %}
   <a class="btn btn-rs" href="{% url 'novo_veiculo' %}">Novo veículo</a>
+  {% endif %}
 </div>
 {% endif %}
 {% endblock %}

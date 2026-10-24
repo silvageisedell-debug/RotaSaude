@@ -1,5 +1,8 @@
 from django.db import transaction
 from django.shortcuts import get_object_or_404, render
+
+from .acesso import exige
+from .itinerario import calcular_itinerario
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_time
 
@@ -24,6 +27,7 @@ def _formulario(veiculo="", data="", horario="", vagas=""):
     }
 
 
+@exige("admin", "atendente")
 def nova_disponibilidade(request):
     veiculos = Veiculo.objects.all()
     contexto = {
@@ -169,21 +173,33 @@ def _gravar_rota(viagem, disponibilidade, categoria, origem, destino, linhas):
     return viagem
 
 
+@exige("admin", "atendente")
 def lista_rotas(request):
-    viagens = Viagem.objects.select_related(
-        "disponibilidade",
-        "disponibilidade__veiculo",
-        "disponibilidade__veiculo__modelo",
-        "disponibilidade__veiculo__modelo__marca",
-        "categoria",
-    ).prefetch_related("paradas")
+    viagens = list(
+        Viagem.objects.select_related(
+            "disponibilidade",
+            "disponibilidade__veiculo",
+            "disponibilidade__veiculo__modelo",
+            "disponibilidade__veiculo__modelo__marca",
+            "categoria",
+        ).prefetch_related("paradas")
+    )
+    for viagem in viagens:
+        viagem.calculo = calcular_itinerario(
+            list(viagem.paradas.all()),
+            capacidade=viagem.disponibilidade.veiculo.capacidade,
+            vagas=viagem.disponibilidade.vagas,
+            prioridade=viagem.categoria.prioridade,
+        )
     return render(request, "Rota/lista_rotas.html", {"viagens": viagens})
 
 
+@exige("admin", "atendente")
 def nova_rota(request):
     return _tratar_rota(request, Viagem())
 
 
+@exige("admin", "atendente")
 def editar_rota(request, pk):
     viagem = get_object_or_404(Viagem, pk=pk)
     return _tratar_rota(request, viagem)
