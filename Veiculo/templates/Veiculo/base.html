@@ -32,7 +32,7 @@
             <a class="nav-link {% if request.resolver_match.url_name == 'nova_disponibilidade' %}active{% endif %}" href="{% url 'nova_disponibilidade' %}">Disponibilidade</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'lista_rotas' or request.resolver_match.url_name == 'nova_rota' %}active{% endif %}" href="{% url 'lista_rotas' %}">Rotas</a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'lista_rotas' or request.resolver_match.url_name == 'nova_rota' or request.resolver_match.url_name == 'editar_rota' %}active{% endif %}" href="{% url 'lista_rotas' %}">Rotas</a>
           </li>
         </ul>
       </div>

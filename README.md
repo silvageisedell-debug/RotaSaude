@@ -54,9 +54,10 @@ Veiculo/         app de domínio da frota
   static/css/    app.css
 
 Rota/            app da operação
-  models.py      Disponibilidade (FK para Veiculo, PROTECT); CategoriaRota; Viagem
-  views.py       nova_disponibilidade; lista_rotas e nova_rota
-  urls.py        /disponibilidade/nova/, /rotas/, /rotas/nova/
+  models.py      Disponibilidade, CategoriaRota, Viagem e Parada
+  forms.py       formset de paradas (local e ordem)
+  views.py       nova_disponibilidade; lista, publicar e editar rota
+  urls.py        /disponibilidade/nova/, /rotas/, /rotas/nova/, /rotas/<pk>/editar/
   templates/     disponibilidade_nova.html, lista_rotas.html, rota_nova.html
 ```
 
@@ -67,6 +68,7 @@ Rota/            app da operação
 - A exclusão em cascata é protegida: o `Modelo` pertence à `Marca`, e a deleção do Veículo possui a flag `PROTECT` para preservar logs. A disponibilidade também usa `PROTECT` no veículo.
 - Disponibilidade: a data não pode ser anterior a hoje e o horário é obrigatório. Essa checagem mora na view `nova_disponibilidade`, não no model.
 - Rota publicada (`Viagem`): origem e destino em texto, ligados a uma disponibilidade e a uma categoria já cadastradas (`PROTECT`). A tela não pede placa nem nome de categoria digitados.
+- Itinerário: paradas com local e ordem única na mesma viagem. A ordem é o número informado na tela. Apagar a viagem apaga as paradas (`CASCADE`).
 
 ## Rotas Mapeadas
 
@@ -79,7 +81,8 @@ Rota/            app da operação
 | `/Veiculo/<pk>/apagar/` | `apagar_veiculo` | Confirmação em GET, apagado no POST |
 | `/disponibilidade/nova/` | `nova_disponibilidade` | Registrar disponibilidade e vagas |
 | `/rotas/` | `lista_rotas` | Lista das rotas publicadas |
-| `/rotas/nova/` | `nova_rota` | Publicar origem, destino, disponibilidade e categoria |
+| `/rotas/nova/` | `nova_rota` | Publicar origem, destino, disponibilidade, categoria e paradas |
+| `/rotas/<pk>/editar/` | `editar_rota` | Ajustar a rota e as paradas já salvas |
 
 ## Caderno de Design
 
@@ -104,6 +107,7 @@ Todo o escopo que validou e desenhou decisões técnicas está documentado em de
 | ADR-017 | Disponibilidade do veículo no app Rota, com validação na view |
 | ADR-018 | Categorias de rota com prioridade, cadastro no admin e seed |
 | ADR-019 | Publicar rota: model Viagem, origem, destino, disponibilidade e categoria |
+| ADR-020 | Itinerário: paradas com ordem única na mesma tela da rota |
 
 ## Como Rodar o Sistema
 

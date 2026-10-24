@@ -1,10 +1,12 @@
-from django.shortcuts import render
+from django.db import transaction
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_time
 
 from Veiculo.models import Veiculo
 
-from .models import CategoriaRota, Disponibilidade, Viagem
+from .forms import ParadaFormSet
+from .models import CategoriaRota, Disponibilidade, Parada, Viagem
 
 MSG_HORARIO = "Informe o horário."
 MSG_DATA = "A data não pode ser anterior a hoje."
@@ -89,6 +91,8 @@ MSG_ORIGEM = "Informe a origem."
 MSG_DESTINO = "Informe o destino."
 MSG_DISPONIBILIDADE = "Selecione uma disponibilidade."
 MSG_CATEGORIA = "Selecione uma categoria."
+MSG_PARADA = "Informe o local e a ordem de cada parada."
+MSG_ORDEM_REPETIDA = "A ordem da parada não pode se repetir na mesma rota."
 
 
 def _formulario_rota(disponibilidade="", categoria="", origem="", destino=""):
@@ -100,7 +104,7 @@ def _formulario_rota(disponibilidade="", categoria="", origem="", destino=""):
     }
 
 
-def _contexto_rota(form=None, erro=None, sucesso=None):
+def _contexto_rota(viagem, form=None, erro=None, sucesso=None, formset=None, titulo="Nova rota"):
     return {
         "disponibilidades": Disponibilidade.objects.select_related(
             "veiculo", "veiculo__modelo", "veiculo__modelo__marca"
@@ -109,7 +113,60 @@ def _contexto_rota(form=None, erro=None, sucesso=None):
         "erro": erro,
         "sucesso": sucesso,
         "form": form or _formulario_rota(),
+        "formset": formset if formset is not None else _formset_paradas(None, viagem),
+        "titulo": titulo,
     }
+
+
+def _formset_paradas(data, viagem):
+    if data is None and viagem.pk:
+        initial = [
+            {"local": parada.local, "ordem": parada.ordem}
+            for parada in viagem.paradas.all()
+        ]
+        return ParadaFormSet(initial=initial, prefix="paradas")
+    if data is None:
+        return ParadaFormSet(prefix="paradas")
+    return ParadaFormSet(data, prefix="paradas")
+
+
+def _linhas_paradas(formset):
+    if not formset.is_valid():
+        return None, MSG_PARADA
+    linhas = []
+    ordens = []
+    for formulario in formset.forms:
+        limpo = getattr(formulario, "cleaned_data", None) or {}
+        if not limpo:
+            continue
+        local = (limpo.get("local") or "").strip()
+        ordem = limpo.get("ordem")
+        if local == "" and ordem is None:
+            continue
+        if local == "" or ordem is None:
+            return None, MSG_PARADA
+        linhas.append((local, ordem))
+        ordens.append(ordem)
+    if len(ordens) != len(set(ordens)):
+        return None, MSG_ORDEM_REPETIDA
+    return linhas, None
+
+
+def _gravar_rota(viagem, disponibilidade, categoria, origem, destino, linhas):
+    with transaction.atomic():
+        viagem.disponibilidade = disponibilidade
+        viagem.categoria = categoria
+        viagem.origem = origem
+        viagem.destino = destino
+        viagem.save()
+        viagem.paradas.all().delete()
+        Parada.objects.bulk_create(
+            [
+                Parada(viagem=viagem, local=local, ordem=ordem)
+                for local, ordem in linhas
+            ]
+        )
+    return viagem
 
 
 def lista_rotas(request):
@@ -119,67 +176,102 @@ def lista_rotas(request):
         "disponibilidade__veiculo__modelo",
         "disponibilidade__veiculo__modelo__marca",
         "categoria",
-    )
+    ).prefetch_related("paradas")
     return render(request, "Rota/lista_rotas.html", {"viagens": viagens})
 
 
 def nova_rota(request):
+    return _tratar_rota(request, Viagem())
+
+
+def editar_rota(request, pk):
+    viagem = get_object_or_404(Viagem, pk=pk)
+    return _tratar_rota(request, viagem)
+
+
+def _tratar_rota(request, viagem):
+    titulo = "Editar rota" if viagem.pk else "Nova rota"
     if request.method != "POST":
-        return render(request, "Rota/rota_nova.html", _contexto_rota())
+        form = _formulario_rota()
+        if viagem.pk:
+            form = _formulario_rota(
+                str(viagem.disponibilidade_id),
+                str(viagem.categoria_id),
+                viagem.origem,
+                viagem.destino,
+            )
+        return render(
+            request,
+            "Rota/rota_nova.html",
+            _contexto_rota(
+                viagem,
+                form,
+                formset=_formset_paradas(None, viagem),
+                titulo=titulo,
+            ),
+        )
 
     disponibilidade_id = (request.POST.get("disponibilidade") or "").strip()
     categoria_id = (request.POST.get("categoria") or "").strip()
     origem = (request.POST.get("origem") or "").strip()
     destino = (request.POST.get("destino") or "").strip()
     form = _formulario_rota(disponibilidade_id, categoria_id, origem, destino)
+    formset = None
+    if "paradas-TOTAL_FORMS" in request.POST:
+        formset = _formset_paradas(request.POST, viagem)
+
+    def recusar(mensagem):
+        return render(
+            request,
+            "Rota/rota_nova.html",
+            _contexto_rota(
+                viagem,
+                form,
+                erro=mensagem,
+                formset=formset,
+                titulo=titulo,
+            ),
+        )
 
     if not origem:
-        return render(
-            request,
-            "Rota/rota_nova.html",
-            _contexto_rota(form, erro=MSG_ORIGEM),
-        )
-
+        return recusar(MSG_ORIGEM)
     if not destino:
-        return render(
-            request,
-            "Rota/rota_nova.html",
-            _contexto_rota(form, erro=MSG_DESTINO),
-        )
+        return recusar(MSG_DESTINO)
 
     try:
         disponibilidade = Disponibilidade.objects.get(pk=int(disponibilidade_id))
     except (TypeError, ValueError, Disponibilidade.DoesNotExist):
-        return render(
-            request,
-            "Rota/rota_nova.html",
-            _contexto_rota(form, erro=MSG_DISPONIBILIDADE),
-        )
+        return recusar(MSG_DISPONIBILIDADE)
 
     try:
         categoria = CategoriaRota.objects.get(pk=int(categoria_id))
     except (TypeError, ValueError, CategoriaRota.DoesNotExist):
-        return render(
-            request,
-            "Rota/rota_nova.html",
-            _contexto_rota(form, erro=MSG_CATEGORIA),
-        )
+        return recusar(MSG_CATEGORIA)
 
-    viagem = Viagem.objects.create(
-        disponibilidade=disponibilidade,
-        categoria=categoria,
-        origem=origem,
-        destino=destino,
+    if formset is None:
+        linhas = []
+    else:
+        linhas, erro_parada = _linhas_paradas(formset)
+        if erro_parada:
+            return recusar(erro_parada)
+
+    nova = viagem.pk is None
+    viagem = _gravar_rota(
+        viagem, disponibilidade, categoria, origem, destino, linhas
+    )
+    sucesso = (
+        "Rota publicada: "
+        if nova
+        else "Rota atualizada: "
     )
     return render(
         request,
         "Rota/rota_nova.html",
         _contexto_rota(
+            viagem,
             form,
-            sucesso=(
-                "Rota publicada: "
-                f"{viagem.origem} → {viagem.destino}, "
-                f"{viagem.categoria}."
-            ),
+            sucesso=f"{sucesso}{viagem.origem} → {viagem.destino}, {viagem.categoria}.",
+            formset=formset,
+            titulo=titulo,
         ),
     )

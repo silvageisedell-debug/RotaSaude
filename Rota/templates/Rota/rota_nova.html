@@ -1,6 +1,6 @@
 {% extends "Veiculo/base.html" %}
 
-{% block title %}Nova rota · RotaSaúde{% endblock %}
+{% block title %}{{ titulo }} · RotaSaúde{% endblock %}
 
 {% block content %}
 <!-- Bootstrap 5 neste formulário (card, labels, alertas) aplicado com apoio de IA. -->
@@ -8,8 +8,8 @@
   <div class="col-lg-7 col-xl-6">
     <div class="card rs-card">
       <div class="card-body p-4 p-md-5">
-        <h1 class="h3 mb-1">Nova rota</h1>
-        <p class="text-secondary mb-4">Publique origem e destino em cima de uma disponibilidade, com a categoria da viagem.</p>
+        <h1 class="h3 mb-1">{{ titulo }}</h1>
+        <p class="text-secondary mb-4">Publique origem e destino em cima de uma disponibilidade, com a categoria da viagem. As paradas descrevem o caminho, na ordem informada.</p>
 
         {% if erro %}
         <div class="alert alert-danger" role="alert">{{ erro }}</div>
@@ -51,7 +51,23 @@
             <input id="destino" name="destino" type="text" maxlength="120" class="form-control" value="{{ form.destino }}" required>
           </div>
 
-          <div class="d-flex flex-wrap gap-2">
+          <h2 class="h6 mt-4">Paradas</h2>
+          <p class="form-text">Opcional. Informe o local e a ordem de cada parada.</p>
+          {{ formset.management_form }}
+          {% for parada in formset %}
+          <div class="row g-2 mb-2">
+            <div class="col-12 col-sm-8">
+              <label class="form-label" for="{{ parada.local.id_for_label }}">Local</label>
+              {{ parada.local }}
+            </div>
+            <div class="col-12 col-sm-4">
+              <label class="form-label" for="{{ parada.ordem.id_for_label }}">Ordem</label>
+              {{ parada.ordem }}
+            </div>
+          </div>
+          {% endfor %}
+
+          <div class="d-flex flex-wrap gap-2 mt-4">
             <button type="submit" class="btn btn-rs">Salvar</button>
             <a class="btn btn-outline-secondary" href="{% url 'lista_rotas' %}">Voltar à lista</a>
           </div>

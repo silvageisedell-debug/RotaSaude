@@ -6,4 +6,5 @@ urlpatterns = [
     path("disponibilidade/nova/", views.nova_disponibilidade, name="nova_disponibilidade"),
     path("rotas/", views.lista_rotas, name="lista_rotas"),
     path("rotas/nova/", views.nova_rota, name="nova_rota"),
+    path("rotas/<int:pk>/editar/", views.editar_rota, name="editar_rota"),
 ]
