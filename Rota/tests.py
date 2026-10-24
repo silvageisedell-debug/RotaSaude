@@ -10,8 +10,15 @@ from django.utils import timezone
 
 from Veiculo.models import Marca, Modelo, Veiculo
 
+from .itinerario import calcular_itinerario
 from .models import CategoriaRota, Disponibilidade, Parada, Viagem
 from .seeds import semear_categorias
+
+
+def entrar(client, username="atendente@rotasaude.com.br"):
+    usuario = get_user_model().objects.get(username=username)
+    client.force_login(usuario)
+    return usuario
 
 
 class NovaDisponibilidadeTests(TestCase):
@@ -27,6 +34,7 @@ class NovaDisponibilidadeTests(TestCase):
             capacidade=4,
         )
         self.url = "/disponibilidade/nova/"
+        entrar(self.client)
 
     def test_get_mostra_select_de_veiculo(self):
         resposta = self.client.get(self.url)
@@ -146,6 +154,7 @@ class PublicarRotaTests(TestCase):
         )
         self.categoria = CategoriaRota.objects.get(nome="Urgente")
         self.url = "/rotas/nova/"
+        entrar(self.client)
 
     def _post(self, **extras):
         dados = {
@@ -227,6 +236,7 @@ class ItinerarioTests(TestCase):
             vagas=6,
         )
         self.categoria = CategoriaRota.objects.get(nome="Eletiva")
+        entrar(self.client)
 
     def _dados(self, paradas, **extras):
         dados = {
@@ -260,6 +270,8 @@ class ItinerarioTests(TestCase):
         lista = self.client.get("/rotas/")
         html = lista.content.decode()
         self.assertLess(html.index("1. UBS Centro"), html.index("2. Hospital Municipal"))
+        self.assertContains(lista, "8 km")
+        self.assertContains(lista, "16 min")
 
     def test_ordem_repetida_na_mesma_viagem_nao_grava(self):
         resposta = self.client.post(
@@ -318,3 +330,85 @@ class ItinerarioTests(TestCase):
         )
         self.assertContains(resposta, "A ordem da parada não pode se repetir na mesma rota.")
         self.assertEqual(list(viagem.paradas.values_list("ordem", "local")), [(1, "UBS Centro")])
+
+
+class CalculoItinerarioTests(TestCase):
+    def test_lista_vazia(self):
+        resultado = calcular_itinerario([])
+        self.assertTrue(resultado["ok"])
+        self.assertEqual(resultado["sequencia"], [])
+        self.assertEqual(resultado["distancia_total_km"], 0)
+        self.assertEqual(resultado["tempo_estimado_min"], 0)
+        self.assertIn("Lista de paradas vazia.", resultado["avisos"])
+
+    def test_veiculo_sem_capacidade(self):
+        resultado = calcular_itinerario([{"local": "UBS", "ordem": 1}], capacidade=0)
+        self.assertFalse(resultado["ok"])
+        self.assertEqual(resultado["sequencia"], [])
+        self.assertIn("Veículo sem capacidade.", resultado["avisos"])
+
+    def test_vagas_acima_da_capacidade(self):
+        resultado = calcular_itinerario(
+            [{"local": "UBS", "ordem": 1}],
+            capacidade=2,
+            vagas=4,
+        )
+        self.assertFalse(resultado["ok"])
+        self.assertIn("As vagas passam da capacidade do veículo.", resultado["avisos"])
+
+    def test_duplicado_e_ponto_sem_local(self):
+        resultado = calcular_itinerario([
+            {"local": "UBS", "ordem": 2},
+            {"local": "ubs", "ordem": 1},
+            {"local": "  ", "ordem": 3},
+            {"local": "Hospital", "ordem": 4},
+        ])
+        self.assertEqual(
+            [item["local"] for item in resultado["sequencia"]],
+            ["ubs", "Hospital"],
+        )
+        self.assertTrue(any("duplicado" in aviso for aviso in resultado["avisos"]))
+        self.assertTrue(any("sem local" in aviso for aviso in resultado["avisos"]))
+
+    def test_vizinho_mais_proximo_deixa_ponto_inalcancavel(self):
+        resultado = calcular_itinerario(
+            [
+                {"local": "A", "ordem": 1},
+                {"local": "C", "ordem": 2},
+                {"local": "B", "ordem": 3},
+            ],
+            distancias={("A", "B"): 1},
+        )
+        self.assertEqual([item["local"] for item in resultado["sequencia"]], ["A", "B"])
+        self.assertEqual(resultado["distancia_total_km"], 1)
+        self.assertTrue(any("inalcançável" in aviso for aviso in resultado["avisos"]))
+
+
+class AcessoTests(TestCase):
+    def test_anonimo_vai_para_o_login(self):
+        resposta = self.client.get("/rotas/")
+        self.assertEqual(resposta.status_code, 302)
+        self.assertIn("/entrar/", resposta["Location"])
+
+    def test_atendente_nao_apaga_veiculo(self):
+        entrar(self.client)
+        marca = Marca.objects.create(nome="Ford")
+        modelo = Modelo.objects.create(nome="Transit", marca=marca)
+        veiculo = Veiculo.objects.create(
+            placa="ATD1C23",
+            modelo=modelo,
+            ano=2020,
+            chassi="99999999999999999",
+            renavam="99999999999",
+            capacidade=5,
+        )
+        resposta = self.client.post(f"/Veiculo/{veiculo.pk}/apagar/")
+        self.assertEqual(resposta.status_code, 403)
+        self.assertTrue(Veiculo.objects.filter(pk=veiculo.pk).exists())
+
+    def test_painel_do_admin_mostra_o_agendamento(self):
+        entrar(self.client, "admin@rotasaude.com.br")
+        resposta = self.client.get("/")
+        self.assertEqual(resposta.status_code, 200)
+        self.assertContains(resposta, "Novo agendamento")
+        self.assertContains(resposta, "Despacho rápido")
