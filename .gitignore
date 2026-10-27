@@ -11,3 +11,5 @@ htmlcov/
 .DS_Store
 IMPRIMIR_*.md
 .cursor/
+db.sqlite3
+staticfiles/

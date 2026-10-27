@@ -1,0 +1,21 @@
+{# Fragmento carregado dentro do diálogo "Recuperar" (base.html). #}
+<h3>Recuperar</h3>
+<p>Se a página cair ou a internet falhar, você retoma daqui.</p>
+
+<div class="rcs">Preenchimento não enviado</div>
+<div id="rascunhos"></div>
+
+<div class="rcs">Pedidos aguardando ação ({{ pendentes|length }})</div>
+{% for s in pendentes %}<div class="rci"><a href="{% url 'solicitacoes:detalhe' s.pk %}"><b>{{ s.codigo }}</b></a> · {{ s.paciente }}<small>{{ s.destino }} · {{ s.data|date:"d/m/Y" }} {{ s.horario|time:"H:i" }} · {{ s.get_status_display }}</small></div>
+{% empty %}<div class="rci"><small>Nenhum.</small></div>{% endfor %}
+
+<div class="rcs">Viagens de hoje ({{ viagens|length }})</div>
+{% for v in viagens %}<div class="rci"><b>{{ v.codigo }}</b> · {{ v.destino }}<small>{{ v.saida|time:"H:i" }} · {{ v.veiculo }} · {{ v.get_status_display }}</small></div>
+{% empty %}<div class="rci"><small>Nenhuma.</small></div>{% endfor %}
+
+<div class="rcs">Suas últimas ações</div>
+{% for a in acoes %}<div class="rci"><small>{{ a.criado_em|date:"d/m/Y H:i" }} · {{ a.solicitacao.codigo }}</small>{{ a.texto }}</div>
+{% empty %}<div class="rci"><small>Nenhuma.</small></div>{% endfor %}
+
+<textarea id="texto-resumo" class="sr" readonly aria-hidden="true">{{ texto_resumo }}</textarea>
+<div class="ac"><button type="button" class="btn ghost" id="copiar-resumo">Copiar resumo</button><button type="button" class="btn em" data-fechar>Fechar</button></div>

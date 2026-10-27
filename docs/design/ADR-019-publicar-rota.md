@@ -38,7 +38,7 @@ O select de disponibilidade fica vazio enquanto ninguém registrar vaga. A inter
 
 ## Status
 
-Adotado nesta entrega (issue #23).
+Substituído pela ADR 022 (disponibilidade calculada). Adotado originalmente na issue #23.
 
 ## Redação
 

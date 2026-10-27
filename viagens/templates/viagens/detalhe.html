@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ viagem.codigo }}{% endblock %}
+{% block conteudo %}
+<div class="grid2">
+ <div class="card">
+  <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h3 style="margin:0">{{ viagem.codigo }} · {{ viagem.data|date:"d/m/Y" }}</h3>{% pill viagem.get_status_display %}</div>
+  <dl class="dl">
+   <dt>Horário</dt><dd>{{ viagem.saida|time:"H:i" }} às {{ viagem.chegada|time:"H:i" }} ({{ viagem.duracao_horas }} h)</dd>
+   <dt>Veículo</dt><dd>{{ viagem.veiculo }} · {{ viagem.veiculo.capacidade }} lugares</dd>
+   <dt>Motorista</dt><dd>{{ viagem.motorista }}{% if viagem.motorista.telefone %} · {{ viagem.motorista.telefone }}{% endif %}</dd>
+   <dt>Destino</dt><dd>{{ viagem.destino }}</dd>
+  </dl>
+
+  <h3>Passageiros</h3>
+  {% for s in passageiros %}
+  <div class="pax">
+   {% if viagem.status == "em_andamento" %}
+   <form method="post" action="{% url 'viagens:embarque' viagem.pk s.pk %}" class="inline">{% csrf_token %}
+    <input type="checkbox" {% if s.embarcou %}checked{% endif %} onchange="this.form.submit()" aria-label="Embarcou: {{ s.paciente }}">
+    <noscript><button class="btn sm">{{ s.embarcou|yesno:"Desfazer,Embarcou" }}</button></noscript>
+   </form>
+   {% else %}
+   <input type="checkbox" disabled {% if s.embarcou %}checked{% endif %} aria-label="Embarcou: {{ s.paciente }}">
+   {% endif %}
+   <span><a href="{% url 'solicitacoes:detalhe' s.pk %}">{{ s.paciente }}</a>{% if s.acompanhante %} (+1){% endif %}<small>Embarque: {{ s.ponto_embarque }} ({{ s.ponto_embarque.endereco_completo }}) · {{ s.horario|time:"H:i" }}</small><small>{{ s.get_mobilidade_display }}{% if s.observacoes %} · {{ s.observacoes }}{% endif %}</small></span>
+  </div>
+  {% empty %}
+  <div class="empty">{% if viagem.status == "cancelada" %}Viagem cancelada: os pacientes voltaram para aprovadas.{% else %}Nenhum passageiro.{% endif %}</div>
+  {% endfor %}
+  {% if viagem.status == "em_andamento" %}<p class="mut" style="margin-top:8px">Marque quem embarcou antes de concluir. Quem não embarcar volta para a regulação.</p>{% endif %}
+
+  <div class="ac">
+   {% if viagem.status == "programada" %}
+   <form method="post" action="{% url 'viagens:iniciar' viagem.pk %}">{% csrf_token %}<button class="btn em full">Iniciar viagem</button></form>
+   <form method="post" action="{% url 'viagens:cancelar' viagem.pk %}" data-confirmar="Cancelar a viagem? Os pacientes voltam para aprovadas.">{% csrf_token %}<button class="btn ros full">Cancelar viagem</button></form>
+   {% elif viagem.status == "em_andamento" %}
+   <form method="post" action="{% url 'viagens:concluir' viagem.pk %}">{% csrf_token %}<button class="btn full">Concluir viagem</button></form>
+   {% endif %}
+  </div>
+  <a class="btn ghost w" href="{% url 'viagens:quadro' %}?data={{ viagem.data|date:'Y-m-d' }}">Voltar ao quadro</a>
+ </div>
+ <div class="card">
+  <h3>Itinerário</h3>
+  <p class="sum">Embarques na ordem do horário dos pacientes e, no fim, os destinos.</p>
+  <ol class="itin">{% for p in paradas %}<li>{{ p.local }}</li>{% empty %}<li>Sem paradas registradas.</li>{% endfor %}</ol>
+ </div>
+</div>
+{% endblock %}

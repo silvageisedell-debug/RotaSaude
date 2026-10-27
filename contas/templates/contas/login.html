@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Entrar{% endblock %}
+{% block corpo %}
+<div id="login"><div class="lc">
+ <img src="{% static 'img/logo-rotasaude.jpg' %}" alt="RotaSaúde, transporte inteligente para quem mais precisa" style="width:100%;border-radius:14px;display:block">
+ <form method="post" novalidate>{% csrf_token %}
+  <input type="hidden" name="next" value="{{ next }}">
+  <label class="l" for="id_email">E-mail</label>{{ form.email }}
+  <label class="l" for="id_senha">Senha</label>{{ form.senha }}
+  <div style="color:#E11D48;font-weight:700;font-size:12px;min-height:16px;margin-top:8px" role="alert">
+   {% for e in form.non_field_errors %}{{ e }}{% endfor %}
+   {% for e in form.email.errors %}{{ e }}{% endfor %}
+  </div>
+  <button class="btn w" style="margin-top:6px" type="submit">Entrar no sistema</button>
+ </form>
+ <a class="btn ghost w" style="margin-top:8px;display:block;text-align:center;text-decoration:none" href="{% url 'contas:solicitar_acesso' %}">Solicitar acesso de atendente</a>
+ {% if contas_teste %}
+ <label class="l" style="margin-top:18px">Contas de teste (toque para preencher)</label>
+ <div class="roles contas-teste">
+  {% for c in contas_teste %}
+  <button type="button" class="rb" data-email="{{ c.email }}" data-senha="{{ c.senha }}">{{ c.nome }}<small>{{ c.email }}<br>senha {{ c.senha }}</small></button>
+  {% endfor %}
+ </div>
+ {% endif %}
+</div></div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll(".contas-teste .rb").forEach(function (b) {
+  b.addEventListener("click", function () {
+    document.getElementById("id_email").value = b.dataset.email;
+    document.getElementById("id_senha").value = b.dataset.senha;
+  });
+});
+</script>
+{% endblock %}

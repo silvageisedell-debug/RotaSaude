@@ -1,6 +1,6 @@
 # RotaSaúde
 
-Protótipo acadêmico (ISW-030 Web III / ILP — FATEC Olímpia) de **frota de transporte assistencial**. A organização parceira lista, cadastra, edita e apaga veículos pela porta da frente, sem usar o Django Admin.
+Protótipo acadêmico (ISW-030 Web III / ILP — FATEC Olímpia) de **transporte sanitário**. A regulação registra as solicitações dos pacientes, programa as viagens com veículo e motorista disponíveis, acompanha o embarque e mantém a frota pela porta da frente, sem usar o Django Admin.
 
 **Repositório:** [silvageisedell-debug/RotaSaude](https://github.com/silvageisedell-debug/RotaSaude)
 
@@ -35,54 +35,93 @@ Atua no suporte logístico da equipe. É o encarregado formal de repassar as té
 
 Os textos em `docs/` (ADRs e relatórios) foram redigidos com **apoio de IA**, em tom formal e informativo, seguindo as boas práticas de Architecture Decision Record: contexto, decisão, e consequência. A observação de domínio técnica central (Veículo, em contraponto aos exemplos das aulas) foi definida pelo Tech Lead.
 
-Os templates HTML usam **Bootstrap 5** aplicado com apoio de IA (utilitários, navbar, formulários e confirmação). O crédito está em comentário de fonte nos `.html`, para não poluir a interface.
+A interface segue o protótipo de apresentação (um `index.html` só de frontend, usado como referência e não versionado), migrado para templates Django com apoio de IA (ADR 025).
 
 ## Arquitetura (MVT)
 
 ```text
-Portal/          projeto Django (settings, urls raiz, WSGI/ASGI)
-  settings.py    INSTALLED_APPS inclui Veiculo e Rota
-  urls.py        admin/ + include("Veiculo.urls") + include("Rota.urls")
-
-Veiculo/         app de domínio da frota
-  models.py      Marca, Modelo, Veiculo
-  admin.py       cadastro interno de marca/modelo/veículo
-  forms.py       VeiculoForm (ModelForm) — porta da frente
-  views.py       lista_veiculos, novo_veiculo, editar_veiculo, apagar_veiculo
-  urls.py        /Veiculo/, /nova/, /<pk>/editar/, /<pk>/apagar/
-  templates/     base.html, lista.html, nova.html, confirmar_apagar.html
-  static/css/    app.css
-
-Rota/            app da operação
-  models.py      Disponibilidade, CategoriaRota, Viagem e Parada
-  forms.py       formset de paradas (local e ordem)
-  views.py       nova_disponibilidade; lista, publicar e editar rota
-  urls.py        /disponibilidade/nova/, /rotas/, /rotas/nova/, /rotas/<pk>/editar/
-  templates/     disponibilidade_nova.html, lista_rotas.html, rota_nova.html
+portal/            projeto Django (settings, urls raiz, WSGI/ASGI, forms e navegação comuns)
+contas/            Usuario (login por e-mail), perfis, liberação de acesso, PermissaoModulo
+frota/             Marca, Modelo, Veiculo, Motorista, PontoEmbarque, PedidoPontoEmbarque
+solicitacoes/      Categoria, Destino, Solicitacao, HistoricoSolicitacao + services.py
+viagens/           Viagem, Parada + services.py (disponibilidade, programação, execução)
+painel/            início com indicadores, resumo "Recuperar", comando popular_demo
+caderno/           anotações e lembretes do atendente
+templates/         base.html, parciais e páginas de erro
+static/            css, js e imagens (logo)
+docs/              Caderno de Design (ADRs), relatórios e protótipos
 ```
+
+Cada app guarda os seus templates em `<app>/templates/<app>/`. As regras ficam nos `services.py`. As views só leem a requisição, chamam o serviço e escolhem o template.
 
 ## Regras de Negócio Implementadas
 
-- Os formulários e lógicas básicas suportam cadastro livre para gerenciar Veículos, e os limites orgânicos operacionais (ex: ocupantes do veículo) serão parametrizados futuramente geridos de maneira escalável pelo ADM baseado no **Tipo do Veículo**, em vez de validações fixas.
-- Placa, chassi e Renavam devem ser únicos e exclusivos.
-- A exclusão em cascata é protegida: o `Modelo` pertence à `Marca`, e a deleção do Veículo possui a flag `PROTECT` para preservar logs. A disponibilidade também usa `PROTECT` no veículo.
-- Disponibilidade: a data não pode ser anterior a hoje e o horário é obrigatório. Essa checagem mora na view `nova_disponibilidade`, não no model.
-- Rota publicada (`Viagem`): origem e destino em texto, ligados a uma disponibilidade e a uma categoria já cadastradas (`PROTECT`). A tela não pede placa nem nome de categoria digitados.
-- Itinerário: paradas com local e ordem única na mesma viagem. A ordem é o número informado na tela. Apagar a viagem apaga as paradas (`CASCADE`).
+- **Acesso:** o login é por e-mail. O atendente que pede acesso fica inativo até o administrador liberar. Os módulos visíveis seguem a matriz de permissões. Usuários e Permissões são só do administrador, e o Caderno é só do atendente.
+- **Frota:** placa (ABC-1D23 ou ABC-1234), chassi (17 caracteres, sem I, O e Q) e Renavam são únicos. A capacidade (1 a 60) não conta o motorista. Veículo com viagem registrada não pode ser apagado (`PROTECT`).
+- **Motoristas:** o CPF é validado pelos dígitos verificadores e é único; a CNH tem 11 números e é única. Não se cadastra motorista com CNH vencida, e a CNH vencida bloqueia o motorista nas viagens. CPF e CNH aparecem mascarados nas listas.
+- **Pontos de embarque:** o endereço é obrigatório e o CEP, opcional. Remover desativa o ponto, sem apagar. O atendente pode pedir um ponto novo; o administrador aprova ou recusa com motivo.
+- **Solicitações:**
+  - a data precisa ser a partir de hoje;
+  - o fluxo é pendente → aprovada → agendada → em viagem → concluída;
+  - negar exige motivo de pelo menos 5 letras;
+  - só dá para cancelar a partir de pendente ou aprovada;
+  - toda mudança fica no histórico, com o usuário e a hora.
+- **Viagens:**
+  - a disponibilidade é calculada pelo status do veículo, pela validade da CNH e pelas viagens ativas;
+  - a viagem sai a partir das 05h, termina até as 20h e dura de 1 a 12 horas;
+  - a data precisa ser a mesma das solicitações;
+  - os passageiros (paciente + acompanhante) não passam da capacidade do veículo;
+  - o veículo e o motorista não podem ter viagem sobreposta;
+  - ao concluir, quem não embarcou volta para aprovada.
+- **Itinerário:** as paradas são geradas ao programar (os embarques pelo horário dos pacientes e depois os destinos), com ordem única na mesma viagem.
 
 ## Rotas Mapeadas
 
 | URL | Nome | Função |
 |---|---|---|
-| `/admin/` | — | Administração de fundos (equipe) |
-| `/Veiculo/` | `lista_veiculos` | Lista geral da frota |
-| `/Veiculo/nova/` | `novo_veiculo` | Realizar cadastro da frota |
-| `/Veiculo/<pk>/editar/` | `editar_veiculo` | Edição dos dados |
-| `/Veiculo/<pk>/apagar/` | `apagar_veiculo` | Confirmação em GET, apagado no POST |
-| `/disponibilidade/nova/` | `nova_disponibilidade` | Registrar disponibilidade e vagas |
-| `/rotas/` | `lista_rotas` | Lista das rotas publicadas |
-| `/rotas/nova/` | `nova_rota` | Publicar origem, destino, disponibilidade, categoria e paradas |
-| `/rotas/<pk>/editar/` | `editar_rota` | Ajustar a rota e as paradas já salvas |
+| `/admin/` | — | Administração interna (equipe) |
+| `/` | `painel:raiz` | Leva ao login ou à primeira tela liberada |
+| `/inicio/` | `painel:inicio` | Painel de regulação (indicadores, disponibilidade, viagens de hoje) |
+| `/resumo/` | `painel:resumo` | Recuperar: pendências, viagens de hoje e últimas ações |
+| `/sem-modulo/` | `painel:sem_modulo` | Aviso para perfil sem módulos liberados |
+| `/contas/entrar/` | `contas:login` | Login por e-mail |
+| `/contas/sair/` | `contas:sair` | Sair (POST) |
+| `/contas/solicitar-acesso/` | `contas:solicitar_acesso` | Cadastro público de atendente |
+| `/contas/usuarios/` | `contas:usuarios` | Lista e cadastro de usuários (admin) |
+| `/contas/usuarios/<pk>/acesso/` | `contas:alternar_acesso` | Liberar ou desativar acesso (POST, admin) |
+| `/contas/permissoes/` | `contas:permissoes` | Matriz de permissões por perfil (admin) |
+| `/frota/veiculos/` | `frota:veiculos` | Lista e cadastro de veículos |
+| `/frota/veiculos/<pk>/editar/` | `frota:editar_veiculo` | Editar veículo |
+| `/frota/veiculos/<pk>/apagar/` | `frota:apagar_veiculo` | Confirmação em GET, apagado no POST |
+| `/frota/veiculos/<pk>/status/` | `frota:status_veiculo` | Trocar status (POST) |
+| `/frota/motoristas/` | `frota:motoristas` | Lista e cadastro de motoristas |
+| `/frota/motoristas/<pk>/editar/` | `frota:editar_motorista` | Editar motorista |
+| `/frota/pontos/` | `frota:pontos` | Pontos de embarque e pedidos pendentes |
+| `/frota/pontos/<pk>/editar/` | `frota:editar_ponto` | Editar ponto |
+| `/frota/pontos/<pk>/remover/` | `frota:remover_ponto` | Desativar ponto |
+| `/frota/pontos/solicitar/` | `frota:solicitar_ponto` | Atendente pede ponto novo |
+| `/frota/pontos/pedidos/<pk>/aprovar/` | `frota:aprovar_pedido` | Aprovar pedido (POST) |
+| `/frota/pontos/pedidos/<pk>/recusar/` | `frota:recusar_pedido` | Recusar pedido com motivo |
+| `/solicitacoes/` | `solicitacoes:lista` | Kanban ou lista (`?modo=lista&status=&q=`) |
+| `/solicitacoes/nova/` | `solicitacoes:nova` | Registrar solicitação |
+| `/solicitacoes/<pk>/` | `solicitacoes:detalhe` | Detalhe com histórico e ações |
+| `/solicitacoes/<pk>/editar/` | `solicitacoes:editar` | Editar (pendente ou aprovada) |
+| `/solicitacoes/<pk>/aprovar/` | `solicitacoes:aprovar` | Aprovar (POST) |
+| `/solicitacoes/<pk>/recusar/` | `solicitacoes:recusar` | Recusar com motivo |
+| `/solicitacoes/<pk>/cancelar/` | `solicitacoes:cancelar` | Cancelar (POST) |
+| `/viagens/` | `viagens:quadro` | Quadro de horários do dia (`?data=AAAA-MM-DD`) |
+| `/viagens/programar/` | `viagens:programar` | Programar viagem (`?solicitacao=<pk>`) |
+| `/viagens/disponibilidade/` | `viagens:disponibilidade` | JSON de veículos e motoristas livres na janela |
+| `/viagens/<pk>/` | `viagens:detalhe` | Passageiros, itinerário e ações |
+| `/viagens/<pk>/iniciar/` | `viagens:iniciar` | Iniciar viagem (POST) |
+| `/viagens/<pk>/concluir/` | `viagens:concluir` | Concluir viagem (POST) |
+| `/viagens/<pk>/cancelar/` | `viagens:cancelar` | Cancelar viagem (POST) |
+| `/viagens/<pk>/embarque/<solicitacao_pk>/` | `viagens:embarque` | Marcar ou desfazer embarque (POST) |
+| `/caderno/` | `caderno:inicio` | Anotações e lembretes (`?f=&q=&editar=`) |
+| `/caderno/avisado/` | `caderno:avisado` | Fechar o aviso de lembretes (POST) |
+| `/caderno/<pk>/concluir/` | `caderno:concluir` | Concluir ou reabrir (POST) |
+| `/caderno/<pk>/apagar/` | `caderno:apagar` | Apagar (POST) |
+| `/caderno/<pk>/adiar/` | `caderno:adiar` | Adiar lembrete (POST) |
 
 ## Caderno de Design
 
@@ -104,14 +143,21 @@ Todo o escopo que validou e desenhou decisões técnicas está documentado em de
 | ADR-013 | MVVM não entra no embarque nem no CRUD atual |
 | ADR-014 | Adapter não entra no acesso ao banco |
 | ADR-015 | Pipeline da operação e distribuição das atividades |
-| ADR-017 | Disponibilidade do veículo no app Rota, com validação na view |
-| ADR-018 | Categorias de rota com prioridade, cadastro no admin e seed |
-| ADR-019 | Publicar rota: model Viagem, origem, destino, disponibilidade e categoria |
-| ADR-020 | Itinerário: paradas com ordem única na mesma tela da rota |
+| ADR-017 | Disponibilidade do veículo no app Rota *(substituída pela ADR 022)* |
+| ADR-018 | Categorias com prioridade, cadastro no admin e seed (hoje `solicitacoes.Categoria`) |
+| ADR-019 | Publicar rota: Viagem com origem, destino, disponibilidade e categoria *(substituída pela ADR 022)* |
+| ADR-020 | Itinerário: paradas com ordem única na mesma viagem |
+| ADR-021 | Reestruturação em apps de domínio e URLs em minúsculo |
+| ADR-022 | Disponibilidade calculada e viagem programada |
+| ADR-023 | Contas, perfis e permissões por módulo |
+| ADR-024 | Fluxo das solicitações e pedidos de ponto de embarque |
+| ADR-025 | Frontend migrado do protótipo de apresentação |
 
 ## Como Rodar o Sistema
 
-Na primeira vez, na raiz do projeto, crie o ambiente virtual e instale as dependências nesta ordem:
+Na primeira vez, na raiz do projeto, crie o ambiente virtual e instale as dependências.
+
+Linux / WSL:
 
 ```bash
 python3 -m venv .venv
@@ -119,11 +165,33 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Com o ambiente ativo, aplique as migrações e suba o servidor:
+Windows (PowerShell):
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+Com o ambiente ativo, crie o banco, carregue os dados de apresentação e suba o servidor:
 
 ```bash
 python manage.py migrate
+python manage.py popular_demo
 python manage.py runserver
 ```
 
-Acesso via `http://127.0.0.1:8000/Veiculo/`. A disponibilidade fica em `http://127.0.0.1:8000/disponibilidade/nova/`. As rotas ficam em `http://127.0.0.1:8000/rotas/`. (Garantir um superuser no `/admin/` e as modelagens de Marca, Modelo e Veículo registradas no banco).
+Acesse `http://127.0.0.1:8000/`. Contas de demonstração:
+
+| Perfil | E-mail | Senha |
+|---|---|---|
+| Administrador | `admin@rotasaude.com.br` | `admin123` |
+| Atendente / Regulador | `atendente@rotasaude.com.br` | `atend123` |
+
+Para rodar os testes:
+
+```bash
+python manage.py test
+```
+
+Quem tinha um `db.sqlite3` da estrutura antiga (apps `Veiculo` e `Rota`) precisa apagá-lo antes do `migrate` (ADR 021).

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block conteudo %}
+<div class="card narrow">
+ <h3>{{ titulo }}</h3>
+ <p class="mut">{{ subtitulo }}</p>
+ <form method="post" novalidate data-rascunho>{% csrf_token %}
+  {% include "parciais/erros_form.html" %}
+  <div class="fg">
+   {% for campo in form %}{% include "parciais/campo.html" with campo=campo largo=True %}{% endfor %}
+  </div>
+  <div class="ac"><a class="btn ghost" href="{% url voltar %}">Cancelar</a><button class="btn em" type="submit">Salvar alterações</button></div>
+ </form>
+</div>
+{% endblock %}

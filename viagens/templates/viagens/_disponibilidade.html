@@ -1,0 +1,17 @@
+{# Cartão de disponibilidade do dia. Espera `disponibilidade` e `titulo_disponibilidade`. #}
+<div class="card dgc mb" data-tour="Disponibilidade" data-tour-texto="Quem está livre, programado, em viagem ou em manutenção no dia, com os horários. Motorista com CNH vencida aparece bloqueado.">
+ <h3>{{ titulo_disponibilidade }}</h3>
+ {% with v=disponibilidade.veiculos m=disponibilidade.motoristas %}
+ <p class="sum">{{ v|livres }} de {{ v|length }} veículos e {{ m|livres }} de {{ m|length }} motoristas disponíveis.</p>
+ <div class="dg">
+  <div><h4>Veículos</h4>
+   {% for s in v %}<div class="act"><i style="background:{{ s.status|cor }}"></i><div><b>{{ s.objeto.modelo }}</b><small>{{ s.objeto.placa_formatada }} · {{ s.objeto.capacidade }} lugares{% if s.detalhe %} · {{ s.detalhe }}{% endif %}</small></div>{% pill s.status %}</div>
+   {% empty %}<div class="empty">Nenhum veículo cadastrado.</div>{% endfor %}
+  </div>
+  <div><h4>Motoristas</h4>
+   {% for s in m %}<div class="act"><i style="background:{{ s.status|cor }}"></i><div><b>{{ s.objeto.nome }}</b><small>{{ s.detalhe }}</small></div>{% pill s.status %}</div>
+   {% empty %}<div class="empty">Nenhum motorista cadastrado.</div>{% endfor %}
+  </div>
+ </div>
+ {% endwith %}
+</div>

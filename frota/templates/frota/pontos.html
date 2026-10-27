@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Frota · Pontos de embarque{% endblock %}
+{% block conteudo %}
+<h2>Frota e motoristas</h2>
+{% include "frota/_abas.html" %}
+{% if pedidos_pendentes or pedidos_respondidos %}
+<div class="card mb" data-tour="Pedidos de ponto de embarque" data-tour-texto="Aqui chegam os pedidos feitos pelos atendentes. Aprove para cadastrar o ponto na hora ou recuse informando o motivo.">
+ <h3>Pedidos de ponto de embarque ({{ pedidos_pendentes|length }})</h3>
+ {% for p in pedidos_pendentes %}
+ <div class="act" style="align-items:center">
+  <i style="background:{{ 'Pendente'|cor }};margin-top:0"></i>
+  <div style="flex:1"><b>{{ p.nome }}</b><small>{{ p.endereco }}{% if p.cep %} · CEP {{ p.cep }}{% endif %}</small><small>Pedido por {{ p.solicitante.nome }} em {{ p.criado_em|date:"d/m/Y H:i" }}{% if p.justificativa %} · {{ p.justificativa }}{% endif %}</small></div>
+  <span style="display:flex;gap:6px">
+   <form method="post" action="{% url 'frota:aprovar_pedido' p.pk %}" class="inline">{% csrf_token %}<button class="btn em sm">Aprovar</button></form>
+   <a class="btn ghost sm" href="{% url 'frota:recusar_pedido' p.pk %}">Recusar</a>
+  </span>
+ </div>
+ {% empty %}<div class="empty">Nenhum pedido aguardando.</div>{% endfor %}
+ {% if pedidos_respondidos %}
+ <div class="rcs">Respondidos recentemente</div>
+ {% for p in pedidos_respondidos %}
+ <div class="act"><i style="background:{{ p.get_status_display|cor }}"></i><div style="flex:1"><b>{{ p.nome }}</b><small>{{ p.solicitante.nome }}{% if p.motivo_recusa %} · Motivo: {{ p.motivo_recusa }}{% endif %}</small></div>{% pill p.get_status_display %}</div>
+ {% endfor %}
+ {% endif %}
+</div>
+{% endif %}
+<div class="card" data-tour="Pontos de embarque" data-tour-texto="Locais de coleta do paciente, com endereço para o motorista. Use Editar para corrigir e Remover para tirar da lista (as solicitações antigas continuam com o local).">
+ <h3>Pontos de embarque</h3>
+ <p class="mut" style="margin:0 0 10px;font-size:12px">Locais onde o paciente é buscado. Eles aparecem como opção de embarque nas solicitações.</p>
+ {% for p in pontos %}
+ <div class="act" style="align-items:center">
+  <i style="background:var(--em);margin-top:0"></i>
+  <div style="flex:1"><b>{{ p.nome }}</b><small>{{ p.endereco_completo }}</small></div>
+  <span style="display:flex;gap:6px"><a class="btn ghost sm" href="{% url 'frota:editar_ponto' p.pk %}">Editar</a><a class="btn ghost sm" href="{% url 'frota:remover_ponto' p.pk %}">Remover</a></span>
+ </div>
+ {% endfor %}
+ <button type="button" class="accb" aria-expanded="{{ abrir_form|yesno:'true,false' }}">Cadastro de ponto de embarque</button>
+ <div class="accf" {% if not abrir_form %}hidden{% endif %}>
+  <form method="post" novalidate data-rascunho>{% csrf_token %}
+   {% include "parciais/erros_form.html" %}
+   <div class="fg">
+    {% include "parciais/campo.html" with campo=form.nome largo=True %}
+    {% include "parciais/campo.html" with campo=form.endereco largo=True %}
+    {% include "parciais/campo.html" with campo=form.cep largo=True %}
+   </div>
+   <button class="btn em w" type="submit">Cadastrar ponto de embarque</button>
+  </form>
+ </div>
+</div>
+{% endblock %}

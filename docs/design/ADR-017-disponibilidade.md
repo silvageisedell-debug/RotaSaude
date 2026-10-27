@@ -43,7 +43,7 @@ Sem veículo cadastrado o seletor não aparece: o template mostra o estado vazio
 
 ## Status
 
-Adotado nesta entrega (issue #21).
+Substituído pela ADR 022 (disponibilidade calculada). Adotado originalmente na issue #21.
 
 ## Redação
 

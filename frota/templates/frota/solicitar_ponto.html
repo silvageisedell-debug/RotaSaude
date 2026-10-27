@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Solicitar ponto de embarque{% endblock %}
+{% block conteudo %}
+<div class="card narrow">
+ <h3>Solicitar ponto de embarque</h3>
+ <p class="mut">Não achou o local na lista? Peça ao administrador para cadastrar. Ele recebe o seu pedido e responde por aqui.</p>
+ <form method="post" novalidate data-rascunho>{% csrf_token %}
+  {% include "parciais/erros_form.html" %}
+  <div class="fg">
+   {% include "parciais/campo.html" with campo=form.nome largo=True %}
+   {% include "parciais/campo.html" with campo=form.endereco largo=True %}
+   {% include "parciais/campo.html" with campo=form.cep %}
+   {% include "parciais/campo.html" with campo=form.justificativa largo=True %}
+  </div>
+  <div class="ac"><a class="btn ghost" href="{% url 'solicitacoes:lista' %}">Voltar</a><button class="btn em" type="submit">Enviar ao administrador</button></div>
+ </form>
+ {% if meus_pedidos %}
+ <div class="rcs">Seus pedidos</div>
+ {% for p in meus_pedidos %}
+ <div class="act"><i style="background:{{ p.get_status_display|cor }}"></i><div style="flex:1"><b>{{ p.nome }}</b><small>{{ p.endereco }}{% if p.cep %} · CEP {{ p.cep }}{% endif %}{% if p.motivo_recusa %} · Motivo: {{ p.motivo_recusa }}{% endif %}</small></div>{% pill p.get_status_display %}</div>
+ {% endfor %}
+ {% endif %}
+</div>
+{% endblock %}

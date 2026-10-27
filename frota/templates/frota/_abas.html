@@ -1,0 +1,7 @@
+<div class="subtabs" data-tour="Áreas da frota" data-tour-texto="Cadastros que alimentam as viagens: veículos, motoristas e pontos de embarque.">
+ {% with n=request.resolver_match.url_name %}
+ <a class="chip {% if n == 'veiculos' %}on{% endif %}" href="{% url 'frota:veiculos' %}">Veículos</a>
+ <a class="chip {% if n == 'motoristas' %}on{% endif %}" href="{% url 'frota:motoristas' %}">Motoristas</a>
+ <a class="chip {% if n == 'pontos' %}on{% endif %}" href="{% url 'frota:pontos' %}">Pontos de embarque{% for a in menu_abas %}{% if a.modulo == 'frota' and a.selo %} <span class="bd" style="margin-left:4px">{{ a.selo }}</span>{% endif %}{% endfor %}</a>
+ {% endwith %}
+</div>
