@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block conteudo %}
+<div class="card narrow">
+ <h3>{{ titulo }}</h3>
+ <p class="mut">{{ explicacao }}</p>
+ <form method="post">{% csrf_token %}
+  {% include "parciais/erros_form.html" %}
+  <div class="campo{% if form.motivo.errors %} erro{% endif %}">
+   <label for="{{ form.motivo.id_for_label }}">Motivo</label>
+   <textarea name="motivo" id="{{ form.motivo.id_for_label }}" class="in" rows="3" maxlength="200" placeholder="{{ placeholder }}" required>{{ form.motivo.value|default:'' }}</textarea>
+   {% for e in form.motivo.errors %}<div class="msg-erro">{{ e }}</div>{% endfor %}
+  </div>
+  <div class="ac"><a class="btn ghost" href="{% url voltar %}">Cancelar</a><button class="btn ros" type="submit">Recusar</button></div>
+ </form>
+</div>
+{% endblock %}

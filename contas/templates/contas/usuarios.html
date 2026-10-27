@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Usuários{% endblock %}
+{% block conteudo %}
+<div class="pg-head"><div><h2>Usuários</h2><p class="sub">Quem pode entrar no sistema. Atendentes que pedem acesso ficam aguardando liberação.</p></div></div>
+<div class="card tw" style="padding:6px" data-tour="Liberar acesso" data-tour-texto="Toque em Liberar acesso para ativar quem pediu cadastro, ou em Ativo para desativar.">
+ <table>
+  <thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Acesso</th></tr></thead>
+  <tbody>
+  {% for u in usuarios %}
+   <tr>
+    <td><b>{{ u.nome }}</b></td><td>{{ u.email }}</td><td>{{ u.get_perfil_display }}</td>
+    <td>{% if u.e_admin %}<span class="mut">Sempre ativo</span>{% else %}
+     <form method="post" action="{% url 'contas:alternar_acesso' u.pk %}" class="inline">{% csrf_token %}
+      <button class="chip {% if u.is_active %}on{% endif %}" type="submit">{% if u.is_active %}Ativo{% else %}Liberar acesso{% endif %}</button>
+     </form>{% endif %}</td>
+   </tr>
+  {% endfor %}
+  </tbody>
+ </table>
+</div>
+<div class="card mt" data-tour="Cadastrar usuário" data-tour-texto="Crie o acesso de um atendente, auxiliar administrativo ou administrativo. O usuário já entra liberado.">
+ <button type="button" class="accb" aria-expanded="{{ abrir_form|yesno:'true,false' }}">Cadastrar usuário</button>
+ <div class="accf" {% if not abrir_form %}hidden{% endif %}>
+  <p class="mut" style="margin:0 0 10px;font-size:12px">O usuário cadastrado aqui já entra com acesso liberado.</p>
+  <form method="post" novalidate data-rascunho>{% csrf_token %}
+   {% include "parciais/erros_form.html" %}
+   <div class="fg">
+    {% include "parciais/campo.html" with campo=form.nome largo=True %}
+    {% include "parciais/campo.html" with campo=form.email largo=True %}
+    {% include "parciais/campo.html" with campo=form.senha %}
+    {% include "parciais/campo.html" with campo=form.perfil %}
+   </div>
+   <button class="btn em w" type="submit">Cadastrar usuário</button>
+  </form>
+ </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Programar viagem{% endblock %}
+{% block conteudo %}
+<div class="card narrow">
+ <h3>Programar viagem</h3>
+ <p class="mut">Data, saída e duração primeiro. Depois toque em Veículo ou Motorista para ver quem está disponível ou ocupado nesse horário.</p>
+ <form method="post" novalidate id="form-programar" data-disponibilidade="{% url 'viagens:disponibilidade' %}">{% csrf_token %}
+  {% include "parciais/erros_form.html" %}
+  <div class="fg">
+   {% include "parciais/campo.html" with campo=form.data %}
+   {% include "parciais/campo.html" with campo=form.saida %}
+   {% include "parciais/campo.html" with campo=form.duracao_horas largo=True %}
+   <div class="campo f{% if form.veiculo.errors %} erro{% endif %}" data-tour="Veículo" data-tour-texto="Toque para ver a lista de veículos livres e ocupados no horário escolhido. Veículos em manutenção ou ocupados não podem ser escolhidos.">
+    <label for="{{ form.veiculo.id_for_label }}">Veículo</label>
+    <div class="dd"><div class="selw" tabindex="0" role="button" aria-haspopup="listbox" data-campo="veiculo">{{ form.veiculo }}</div><div id="lista-veiculo" class="plo hide" role="listbox"></div></div>
+    {% for e in form.veiculo.errors %}<div class="msg-erro">{{ e }}</div>{% endfor %}
+   </div>
+   <div class="campo f{% if form.motorista.errors %} erro{% endif %}">
+    <label for="{{ form.motorista.id_for_label }}">Motorista</label>
+    <div class="dd"><div class="selw" tabindex="0" role="button" aria-haspopup="listbox" data-campo="motorista">{{ form.motorista }}</div><div id="lista-motorista" class="plo hide" role="listbox"></div></div>
+    {% for e in form.motorista.errors %}<div class="msg-erro">{{ e }}</div>{% endfor %}
+   </div>
+  </div>
+  <div class="sum" id="resumo-disponibilidade" style="margin:10px 0 0"></div>
+  <div class="lb" style="margin-top:12px">Pacientes aguardando viagem</div>
+  {% for e in form.solicitacoes.errors %}<div class="msg-erro">{{ e }}</div>{% endfor %}
+  {% for s in form.solicitacoes.field.queryset %}
+  <label class="pax">
+   <input type="checkbox" name="solicitacoes" value="{{ s.pk }}" {% if s.pk|stringformat:"s" in selecionadas %}checked{% endif %}>
+   <span>{{ s.paciente }}{% if s.acompanhante %} (+1){% endif %} <small class="nw">{{ s.codigo }}</small><small>{{ s.destino }} · {{ s.data|date:"d/m/Y" }} às {{ s.horario|time:"H:i" }} · embarque {{ s.ponto_embarque }}</small></span>
+  </label>
+  {% empty %}
+  <div class="empty">Não há solicitações aprovadas. Aprove pedidos na tela de Solicitações.</div>
+  {% endfor %}
+  <div class="ac"><a class="btn ghost" href="{% url 'viagens:quadro' %}">Cancelar</a><button class="btn em" type="submit">Programar</button></div>
+ </form>
+</div>
+{% endblock %}

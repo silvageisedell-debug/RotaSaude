@@ -1,0 +1,15 @@
+{# Cartão de solicitação (kanban, painel). Espera `s` e, opcionalmente, `voltar`. #}
+<div class="kc" style="--c:{{ s.get_status_display|cor }}">
+ <a href="{% url 'solicitacoes:detalhe' s.pk %}" style="color:inherit;text-decoration:none"><b>{{ s.paciente }}</b> <small>{{ s.codigo }}</small></a>
+ <div style="color:var(--mut);margin:3px 0">{{ s.get_tipo_display }} · {{ s.destino }}<br>{{ s.data|date:"d/m/Y" }} às {{ s.horario|time:"H:i" }}{% if s.acompanhante %} · com acompanhante{% endif %}</div>
+ <span class="st" style="--c:{% if s.categoria.prioridade == 1 %}#E11D48{% elif s.categoria.prioridade == 2 %}#F59E0B{% else %}#64748B{% endif %}">{{ s.categoria }}</span>
+ {% if s.status == "pendente" %}
+ <div class="ac">
+  {% if user_pode_viagens %}<a class="btn em sm" href="{% url 'viagens:programar' %}?solicitacao={{ s.pk }}">Aceitar e escolher veículo</a>{% endif %}
+  <form method="post" action="{% url 'solicitacoes:aprovar' s.pk %}">{% csrf_token %}<input type="hidden" name="voltar" value="{{ voltar|default:request.get_full_path }}"><button class="btn sm">Aprovar</button></form>
+  <a class="btn ros sm" href="{% url 'solicitacoes:recusar' s.pk %}">Recusar</a>
+ </div>
+ {% elif s.status == "aprovada" and user_pode_viagens %}
+ <div class="ac"><a class="btn sm" href="{% url 'viagens:programar' %}?solicitacao={{ s.pk }}">Programar viagem</a></div>
+ {% endif %}
+</div>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block conteudo %}
+<div class="card narrow">
+ <h3>{{ titulo }}</h3>
+ <p class="mut">Registre o pedido de transporte do paciente. A data não pode ser anterior a hoje.</p>
+ <form method="post" novalidate data-rascunho>{% csrf_token %}
+  {% include "parciais/erros_form.html" %}
+  <div class="fg">
+   {% include "parciais/campo.html" with campo=form.paciente largo=True %}
+   {% include "parciais/campo.html" with campo=form.telefone %}
+   {% include "parciais/campo.html" with campo=form.tipo %}
+   {% include "parciais/campo.html" with campo=form.categoria %}
+   {% include "parciais/campo.html" with campo=form.mobilidade %}
+   {% include "parciais/campo.html" with campo=form.ponto_embarque largo=True %}
+   {% include "parciais/campo.html" with campo=form.destino largo=True %}
+   {% include "parciais/campo.html" with campo=form.data %}
+   {% include "parciais/campo.html" with campo=form.horario %}
+   {% include "parciais/campo.html" with campo=form.observacoes largo=True %}
+   {% include "parciais/campo.html" with campo=form.acompanhante largo=True %}
+  </div>
+  {% if not user.e_admin %}<p class="mut" style="font-size:12px">Local de embarque não está na lista? <a href="{% url 'frota:solicitar_ponto' %}">Solicite ao administrador</a>.</p>{% endif %}
+  <div class="ac"><a class="btn ghost" href="{% url 'solicitacoes:lista' %}">Cancelar</a><button class="btn em" type="submit">Registrar</button></div>
+ </form>
+</div>
+{% endblock %}

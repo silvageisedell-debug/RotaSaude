@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Solicitações{% endblock %}
+{% block conteudo %}
+<div class="bar" style="justify-content:space-between">
+ <h2 style="margin:0">Solicitações de transporte</h2>
+ <span style="display:flex;gap:6px;flex-wrap:wrap" data-tour="Kanban ou lista" data-tour-texto="Kanban organiza os pedidos em colunas por etapa. Lista mostra uma tabela com busca e filtro por status.">
+  <a class="btn em sm" href="{% url 'solicitacoes:nova' %}" data-tour="Nova solicitação" data-tour-texto="Registre um pedido feito por telefone ou no balcão: paciente, categoria, embarque, destino, data e horário.">+ Nova solicitação</a>
+  {% if not user.e_admin %}<a class="chip" href="{% url 'frota:solicitar_ponto' %}" data-tour="Solicitar ponto de embarque" data-tour-texto="Precisa de um local de coleta que não está na lista? Envie o pedido ao administrador e acompanhe a resposta.">Solicitar ponto de embarque</a>{% endif %}
+  <a class="chip {% if modo != 'lista' %}on{% endif %}" href="?modo=kanban">Kanban</a>
+  <a class="chip {% if modo == 'lista' %}on{% endif %}" href="?modo=lista">Lista</a>
+ </span>
+</div>
+
+{% if modo == "lista" %}
+<div class="bar">
+ {% for valor, rotulo in filtros %}<a class="chip {% if status == valor %}on{% endif %}" href="?modo=lista&status={{ valor }}{% if busca %}&q={{ busca|urlencode }}{% endif %}">{{ rotulo }}</a>{% endfor %}
+</div>
+<form class="bar" method="get">
+ <input type="hidden" name="modo" value="lista"><input type="hidden" name="status" value="{{ status }}">
+ <input class="in" style="max-width:300px" name="q" value="{{ busca }}" placeholder="Buscar paciente, destino ou SOL-001" aria-label="Buscar">
+ <button class="btn sm" type="submit">Buscar</button>
+</form>
+<div class="card tw" style="padding:6px">
+ <table>
+  <thead><tr><th>Nº</th><th>Paciente</th><th>Tipo</th><th>Categoria</th><th>Destino</th><th>Data</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for s in solicitacoes %}
+   <tr class="r" onclick="location.href='{% url 'solicitacoes:detalhe' s.pk %}'">
+    <td><a href="{% url 'solicitacoes:detalhe' s.pk %}"><b>{{ s.codigo }}</b></a></td>
+    <td>{{ s.paciente }}</td><td>{{ s.get_tipo_display }}</td><td>{{ s.categoria }}</td><td>{{ s.destino }}</td>
+    <td class="nw">{{ s.data|date:"d/m/Y" }} {{ s.horario|time:"H:i" }}</td>
+    <td>{% pill s.get_status_display %}</td>
+   </tr>
+  {% empty %}
+   <tr><td colspan="7" class="empty">Nenhuma solicitação encontrada.</td></tr>
+  {% endfor %}
+  </tbody>
+ </table>
+</div>
+{% else %}
+<div class="kb" data-tour="Colunas do Kanban" data-tour-texto="Cada cartão é um pedido. Toque no nome para ver o histórico. Use Aceitar e escolher veículo, Aprovar ou Recusar (a recusa exige um motivo).">
+ {% for titulo, itens in colunas %}
+ <div class="col">
+  <h4>{{ titulo }}<span>{{ itens|length }}</span></h4>
+  {% for s in itens %}{% include "solicitacoes/_cartao.html" %}{% empty %}<small class="mut">Vazio</small>{% endfor %}
+ </div>
+ {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Solicitar acesso{% endblock %}
+{% block corpo %}
+<div id="login"><div class="lc">
+ <img src="{% static 'img/logo-rotasaude.jpg' %}" alt="RotaSaúde" style="width:100%;border-radius:14px;display:block">
+ <h3 style="margin:16px 0 0;font-size:18px">Solicitar acesso</h3>
+ <p class="mut" style="margin:4px 0 10px;font-size:12px">Cadastro para atendentes. O administrador libera o acesso depois de conferir.</p>
+ <form method="post" novalidate data-rascunho>{% csrf_token %}
+  {% include "parciais/erros_form.html" %}
+  {% include "parciais/campo.html" with campo=form.nome %}
+  {% include "parciais/campo.html" with campo=form.email %}
+  {% include "parciais/campo.html" with campo=form.senha %}
+  {% include "parciais/campo.html" with campo=form.confirmar %}
+  {% include "parciais/campo.html" with campo=form.lgpd %}
+  <button class="btn em w" type="submit">Enviar cadastro</button>
+ </form>
+ <a class="btn ghost w" style="margin-top:8px;display:block;text-align:center;text-decoration:none" href="{% url 'contas:login' %}">Já tenho conta</a>
+</div></div>
+{% endblock %}

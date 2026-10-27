@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Frota · Motoristas{% endblock %}
+{% block conteudo %}
+<h2>Frota e motoristas</h2>
+{% include "frota/_abas.html" %}
+<div class="card" data-tour="Motoristas" data-tour-texto="Cadastro com ID, CPF e CNH (mostrados só em parte), categoria e validade. Motorista com CNH vencida fica indisponível nas viagens.">
+ <h3>Motoristas</h3>
+ <p class="mut" style="margin:0 0 8px;font-size:12px">CPF e CNH aparecem só em parte na lista. Motorista com CNH vencida fica indisponível para viagens.</p>
+ {% for m in motoristas %}
+ <div class="act" style="align-items:center">
+  <i style="background:{% if not m.cnh_valida %}#E11D48{% elif m.cnh_vence_em_breve %}#F59E0B{% else %}var(--em){% endif %};margin-top:0"></i>
+  <div style="flex:1">
+   <b>{{ m.nome }}</b>{% if m.curso_emergencia %} <span class="st" style="--c:#0EA5E9">Curso de emergência</span>{% endif %}
+   <small>ID {{ m.codigo }} · CPF {{ m.cpf_mascarado }} · CNH final {{ m.cnh_final }} cat. {{ m.categoria_cnh }}{% if m.telefone %} · {{ m.telefone }}{% endif %}</small>
+   <small style="{% if not m.cnh_valida %}color:#E11D48;font-weight:700{% elif m.cnh_vence_em_breve %}color:#B45309;font-weight:700{% endif %}">{% if m.cnh_valida %}CNH válida até {% else %}CNH vencida em {% endif %}{{ m.validade_cnh|date:"d/m/Y" }}{% if m.cnh_vence_em_breve %} · vence em breve{% endif %}</small>
+  </div>
+  <a class="btn ghost sm" href="{% url 'frota:editar_motorista' m.pk %}">Editar</a>
+ </div>
+ {% empty %}
+ <div class="empty">Nenhum motorista cadastrado.</div>
+ {% endfor %}
+ <button type="button" class="accb" aria-expanded="{{ abrir_form|yesno:'true,false' }}">Cadastro de motorista</button>
+ <div class="accf" {% if not abrir_form %}hidden{% endif %}>
+  <form method="post" novalidate data-rascunho>{% csrf_token %}
+   {% include "parciais/erros_form.html" %}
+   <div class="fg">
+    {% include "parciais/campo.html" with campo=form.nome largo=True %}
+    {% include "parciais/campo.html" with campo=form.cpf %}
+    {% include "parciais/campo.html" with campo=form.cnh %}
+    {% include "parciais/campo.html" with campo=form.categoria_cnh %}
+    {% include "parciais/campo.html" with campo=form.validade_cnh %}
+    {% include "parciais/campo.html" with campo=form.telefone largo=True %}
+    {% include "parciais/campo.html" with campo=form.curso_emergencia largo=True %}
+   </div>
+   <button class="btn em w" type="submit">Cadastrar motorista</button>
+  </form>
+ </div>
+</div>
+{% endblock %}

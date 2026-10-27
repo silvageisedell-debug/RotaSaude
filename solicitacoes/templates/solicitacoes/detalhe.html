@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ s.codigo }}{% endblock %}
+{% block conteudo %}
+<div class="grid2">
+ <div class="card">
+  <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h3 style="margin:0">{{ s.codigo }} · {{ s.paciente }}</h3>{% pill s.get_status_display %}</div>
+  <dl class="dl">
+   <dt>Tipo</dt><dd>{{ s.get_tipo_display }}</dd>
+   <dt>Categoria</dt><dd>{{ s.categoria }} (prioridade {{ s.categoria.prioridade }})</dd>
+   <dt>Data</dt><dd>{{ s.data|date:"d/m/Y" }} às {{ s.horario|time:"H:i" }}</dd>
+   <dt>Embarque</dt><dd>{{ s.ponto_embarque }}<br><small class="mut">{{ s.ponto_embarque.endereco_completo }}</small></dd>
+   <dt>Destino</dt><dd>{{ s.destino }}</dd>
+   <dt>Acompanhante</dt><dd>{{ s.acompanhante|yesno:"Sim,Não" }}</dd>
+   <dt>Mobilidade</dt><dd>{{ s.get_mobilidade_display }}</dd>
+   {% if s.telefone %}<dt>Telefone</dt><dd>{{ s.telefone }}</dd>{% endif %}
+   {% if s.observacoes %}<dt>Observações</dt><dd>{{ s.observacoes }}</dd>{% endif %}
+   {% if s.viagem %}<dt>Viagem</dt><dd><a href="{% url 'viagens:detalhe' s.viagem.pk %}">{{ s.viagem.codigo }}</a> · {{ s.viagem.data|date:"d/m/Y" }} às {{ s.viagem.saida|time:"H:i" }}</dd>{% endif %}
+   {% if s.motivo_recusa %}<dt>Motivo da recusa</dt><dd>{{ s.motivo_recusa }}</dd>{% endif %}
+  </dl>
+  <div class="ac">
+   {% if s.status == "pendente" %}
+    {% if pode_programar %}<a class="btn em sm" href="{% url 'viagens:programar' %}?solicitacao={{ s.pk }}">Aceitar e escolher veículo</a>{% endif %}
+    <form method="post" action="{% url 'solicitacoes:aprovar' s.pk %}">{% csrf_token %}<input type="hidden" name="voltar" value="{{ request.get_full_path }}"><button class="btn sm">Aprovar</button></form>
+   {% elif s.status == "aprovada" and pode_programar %}
+    <a class="btn em sm" href="{% url 'viagens:programar' %}?solicitacao={{ s.pk }}">Programar viagem</a>
+   {% endif %}
+   {% if s.status == "pendente" or s.status == "aprovada" %}
+    <a class="btn ghost sm" href="{% url 'solicitacoes:editar' s.pk %}">Editar</a>
+    <a class="btn ros sm" href="{% url 'solicitacoes:recusar' s.pk %}">Recusar</a>
+    <form method="post" action="{% url 'solicitacoes:cancelar' s.pk %}" data-confirmar="Cancelar esta solicitação?">{% csrf_token %}<button class="btn ghost sm">Cancelar solicitação</button></form>
+   {% endif %}
+  </div>
+  <a class="btn ghost w" href="{% url 'solicitacoes:lista' %}">Voltar às solicitações</a>
+ </div>
+ <div class="card timeline">
+  <h3>Histórico</h3>
+  {% for h in historico %}
+  <div class="act"><i></i><div>{{ h.texto }}<small>{{ h.criado_em|date:"d/m/Y H:i" }}{% if h.usuario %} · {{ h.usuario.nome }}{% endif %}</small></div></div>
+  {% empty %}<div class="empty">Sem registros.</div>{% endfor %}
+ </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Frota · Veículos{% endblock %}
+{% block conteudo %}
+<h2>Frota e motoristas</h2>
+{% include "frota/_abas.html" %}
+<div class="card tw" style="padding:6px" data-tour="Veículos" data-tour-texto="Lista da frota com placa e lugares. Mude o status para Disponível, Em viagem ou Manutenção. Veículos em manutenção não podem ser escolhidos ao programar viagens.">
+ <table>
+  <thead><tr><th>Veículo</th><th>Tipo</th><th>Placa</th><th>Chassi</th><th>Lugares</th><th>Status</th><th>Ações</th></tr></thead>
+  <tbody>
+  {% for v in veiculos %}
+   <tr>
+    <td><b>{{ v.modelo }}</b><br> <small class="mut">{{ v.ano }}</small></td>
+    <td>{{ v.get_tipo_display }}</td>
+    <td class="nw">{{ v.placa_formatada }}</td>
+    <td><small>{{ v.chassi }}</small></td>
+    <td>{{ v.capacidade }}</td>
+    <td>
+     <form method="post" action="{% url 'frota:status_veiculo' v.pk %}" class="st-form">{% csrf_token %}
+      <select class="in" name="status" onchange="this.form.submit()" aria-label="Status de {{ v.placa_formatada }}">
+       {% for valor, rotulo in status_opcoes %}<option value="{{ valor }}" {% if v.status == valor %}selected{% endif %}>{{ rotulo }}</option>{% endfor %}
+      </select>
+      <noscript><button class="btn sm">Salvar</button></noscript>
+     </form>
+    </td>
+    <td class="nw"><a class="btn ghost sm" href="{% url 'frota:editar_veiculo' v.pk %}">Editar</a> <a class="btn ghost sm" href="{% url 'frota:apagar_veiculo' v.pk %}">Apagar</a></td>
+   </tr>
+  {% empty %}
+   <tr><td colspan="7" class="empty">Nenhum veículo cadastrado ainda.</td></tr>
+  {% endfor %}
+  </tbody>
+ </table>
+</div>
+<div class="card mt" data-tour="Cadastrar veículo" data-tour-texto="Informe tipo, modelo, placa (ABC-1D23), chassi (17 letras e números) e quantidade de lugares sem contar o motorista. Marca e modelo novos entram pelo admin.">
+ <button type="button" class="accb" aria-expanded="{{ abrir_form|yesno:'true,false' }}">Cadastro de veículo</button>
+ <div class="accf" {% if not abrir_form %}hidden{% endif %}>
+  <form method="post" novalidate data-rascunho>{% csrf_token %}
+   {% include "parciais/erros_form.html" %}
+   <div class="fg">
+    {% include "parciais/campo.html" with campo=form.tipo %}
+    {% include "parciais/campo.html" with campo=form.modelo %}
+    {% include "parciais/campo.html" with campo=form.placa %}
+    {% include "parciais/campo.html" with campo=form.ano %}
+    {% include "parciais/campo.html" with campo=form.chassi largo=True %}
+    {% include "parciais/campo.html" with campo=form.renavam %}
+    {% include "parciais/campo.html" with campo=form.capacidade %}
+   </div>
+   <button class="btn em w" type="submit">Cadastrar</button>
+  </form>
+ </div>
+</div>
+{% endblock %}

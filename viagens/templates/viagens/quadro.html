@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Viagens{% endblock %}
+{% block conteudo %}
+<div class="bar" style="justify-content:space-between">
+ <h2 style="margin:0">Viagens</h2>
+ <form method="get" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" data-tour="Dia e programação" data-tour-texto="Troque o dia com as setas ou o calendário, volte para Hoje e use + Programar viagem para escolher veículo, motorista, horário e pacientes.">
+  <a class="chip" href="?data={{ anterior|date:'Y-m-d' }}" aria-label="Dia anterior">‹</a>
+  <input class="in" type="date" name="data" style="width:auto" value="{{ dia|date:'Y-m-d' }}" onchange="this.form.submit()" aria-label="Dia">
+  <a class="chip" href="?data={{ seguinte|date:'Y-m-d' }}" aria-label="Dia seguinte">›</a>
+  <a class="chip {% if dia == hoje %}on{% endif %}" href="?data={{ hoje|date:'Y-m-d' }}">Hoje</a>
+  <a class="btn em" href="{% url 'viagens:programar' %}">+ Programar viagem</a>
+ </form>
+</div>
+
+<div class="card gw" data-tour="Quadro de horários" data-tour-texto="Cada linha é um veículo e cada barra é uma viagem, do horário de saída até a duração prevista. Toque numa barra para ver os passageiros, iniciar a viagem e marcar quem embarcou.">
+ <div class="gantt">
+  <div></div>
+  <div class="gh">{% for h in horas %}<span>{{ h }}h</span>{% endfor %}</div>
+  {% for l in linhas %}
+  <div class="gl">{{ l.situacao.objeto.modelo }}<small>{{ l.situacao.objeto.placa_formatada }}{% if l.situacao.status == "Manutenção" %} · manutenção{% endif %}</small></div>
+  <div class="gr">
+   {% for v in l.viagens %}
+   <a class="gb" href="{% url 'viagens:detalhe' v.pk %}" style="--c:{{ v.get_status_display|cor }};left:{{ v.gantt_esquerda|stringformat:'s' }}%;width:{{ v.gantt_largura|stringformat:'s' }}%" title="{{ v.codigo }} · {{ v.saida|time:'H:i' }} às {{ v.chegada|time:'H:i' }} · {{ v.motorista }}">{{ v.codigo }} · {{ v.destino }}</a>
+   {% endfor %}
+  </div>
+  {% empty %}
+  <div class="gl">—</div><div class="gr"></div>
+  {% endfor %}
+ </div>
+ <div class="legenda">
+  <span><i style="background:{{ 'Programada'|cor }}"></i>Programada</span>
+  <span><i style="background:{{ 'Em andamento'|cor }}"></i>Em andamento</span>
+  <span><i style="background:{{ 'Concluída'|cor }}"></i>Concluída</span>
+ </div>
+</div>
+
+<div class="mt">
+{% include "viagens/_disponibilidade.html" %}
+</div>
+<p class="mut" style="font-size:12px">Toque em uma viagem para ver os passageiros. Cada barra mostra o horário de saída e a duração.</p>
+{% endblock %}

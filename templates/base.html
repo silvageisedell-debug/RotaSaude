@@ -1,0 +1,86 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{% block title %}RotaSaúde{% endblock %} · RotaSaúde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/rotasaude.css' %}">
+{% block head %}{% endblock %}
+</head>
+<body data-usuario="{{ user.pk|default:'' }}">
+{% block corpo %}
+<div id="app">
+ <aside id="side">
+  <a class="sb-brand" href="{{ url_inicio }}" title="Ir para o início" style="text-decoration:none">
+   <svg width="38" height="38" viewBox="0 0 44 44" aria-hidden="true"><rect width="44" height="44" rx="12" fill="#22C55E"/><path d="M22 10v16M14 18h16" stroke="#04210F" stroke-width="5" stroke-linecap="round"/><path d="M10 34c8-6 16 2 24-4" stroke="#04210F" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-dasharray="1 5"/></svg>
+   <div>Rota<b>Saúde</b><small>Olímpia/SP</small></div>
+  </a>
+  <nav id="nav" data-tour="Menu de áreas" data-tour-texto="Cada botão abre uma área do sistema. No celular, deslize o menu para o lado. O número laranja indica o que está aguardando ação.">
+   {% for aba in menu_abas %}
+   <a class="tab {% if aba.ativa %}on{% endif %}" href="{{ aba.url }}" title="{{ aba.titulo }}">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ aba.icone|safe }}</svg>
+    <span>{{ aba.titulo }}</span>{% if aba.selo %}<span class="bd">{{ aba.selo }}</span>{% endif %}
+   </a>
+   {% endfor %}
+  </nav>
+  <div class="sb-user" data-tour="Sair" data-tour-texto="Mostra quem está logado. Use o botão de saída ao terminar, principalmente em aparelhos compartilhados.">
+   <div class="av">{{ user.nome|first|upper }}</div>
+   <div><b>{{ user.nome }}</b><span>{{ user.get_perfil_display }}</span></div>
+   <form method="post" action="{% url 'contas:sair' %}" class="inline">{% csrf_token %}
+    <button type="submit" title="Sair" aria-label="Sair"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+   </form>
+  </div>
+  <button class="sb-col" id="colb" type="button" title="Recolher menu">‹</button>
+ </aside>
+
+ <div id="ct">
+  <div id="hero">
+   <div><small>{% now "l, j \d\e F" %}</small><div id="ht">{% saudacao user %}</div></div>
+   <div class="hb">
+    <button type="button" class="chip rec" id="btn-recuperar" data-url="{% url 'painel:resumo' %}" data-tour="Recuperar" data-tour-texto="Mostra o que está aguardando ação, as viagens de hoje e suas últimas ações. Se a página cair no meio de um cadastro, o que você preencheu fica guardado neste aparelho para retomar.">↺ Recuperar<span class="bd hide" id="rcb"></span></button>
+    <button type="button" class="chip help" id="btn-tour" data-tour="Conheça o sistema" data-tour-texto="Abre este tour sempre que você quiser rever as explicações da tela."><b>?</b> Conheça o sistema</button>
+    <span class="rolechip" data-tour="Seu perfil" data-tour-texto="Mostra como você entrou. O perfil define quais áreas aparecem para você.">{{ user.get_perfil_display }}</span>
+   </div>
+  </div>
+  <main id="main">{% block conteudo %}{% endblock %}</main>
+ </div>
+
+ <div id="road" class="{% if viagens_em_andamento %}go{% endif %}" data-tour="Faixa de viagens" data-tour-texto="Mostra quantas viagens estão em andamento. A ambulância se move quando há alguma viagem na estrada.">
+  <div id="rtxt">{% if viagens_em_andamento %}{{ viagens_em_andamento }} viage{{ viagens_em_andamento|pluralize:"m,ns" }} em andamento{% else %}Nenhuma viagem em andamento{% endif %}</div>
+  <svg class="amb" viewBox="0 0 64 28" aria-hidden="true"><rect x="2" y="4" width="40" height="17" rx="4" fill="#fff"/><path d="M42 8h10l8 8v5H42z" fill="#fff"/><path d="M46 10h5l5 5h-10z" fill="#9ad9f5"/><rect x="2" y="15" width="58" height="3" fill="#22C55E"/><path d="M19 7v8M15 11h8" stroke="#E11D48" stroke-width="3" stroke-linecap="round"/><rect class="lt" x="26" y="1" width="8" height="3" rx="1.5" fill="#EF4444"/><circle cx="14" cy="22" r="4" fill="#1f2937"/><circle cx="14" cy="22" r="1.5" fill="#9ca3af"/><circle cx="50" cy="22" r="4" fill="#1f2937"/><circle cx="50" cy="22" r="1.5" fill="#9ca3af"/></svg>
+ </div>
+</div>
+
+<dialog class="md" id="dlg-recuperar" aria-label="Recuperar">
+ <div class="conteudo"></div>
+</dialog>
+
+{% if lembretes_pendentes %}
+<dialog class="md" id="dlg-lembrete" aria-label="Lembrete">
+ <h3>⏰ Lembrete</h3><p>Chegou a hora:</p>
+ {% for n in lembretes_pendentes %}
+ <div class="rci">
+  <b>{{ n.titulo|default:n.texto|truncatechars:60 }}</b>
+  {% if n.titulo and n.texto %}<small>{{ n.texto|truncatechars:120 }}</small>{% endif %}
+  <small>Marcado para {{ n.lembrar_em|date:"d/m H:i" }}</small>
+  <div class="nac">
+   <form method="post" action="{% url 'caderno:concluir' n.pk %}" class="inline">{% csrf_token %}<input type="hidden" name="voltar" value="{{ request.get_full_path }}"><button class="btn em sm">Concluir</button></form>
+   <form method="post" action="{% url 'caderno:adiar' n.pk %}" class="inline">{% csrf_token %}<input type="hidden" name="voltar" value="{{ request.get_full_path }}"><input type="hidden" name="minutos" value="15"><button class="btn ghost sm">+15 min</button></form>
+   <form method="post" action="{% url 'caderno:adiar' n.pk %}" class="inline">{% csrf_token %}<input type="hidden" name="voltar" value="{{ request.get_full_path }}"><input type="hidden" name="minutos" value="60"><button class="btn ghost sm">+1 hora</button></form>
+   <form method="post" action="{% url 'caderno:adiar' n.pk %}" class="inline">{% csrf_token %}<input type="hidden" name="voltar" value="{{ request.get_full_path }}"><input type="hidden" name="minutos" value="1440"><button class="btn ghost sm">Amanhã</button></form>
+  </div>
+ </div>
+ {% endfor %}
+ <form method="post" action="{% url 'caderno:avisado' %}" class="ac">{% csrf_token %}<input type="hidden" name="voltar" value="{{ request.get_full_path }}"><button class="btn ghost w">Fechar</button></form>
+</dialog>
+{% endif %}
+{% endblock %}
+
+{% include "parciais/mensagens.html" %}
+{% block scripts %}{% endblock %}
+<script src="{% static 'js/rotasaude.js' %}"></script>
+</body>
+</html>

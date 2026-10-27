@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ acao|default:"Apagar" }}{% endblock %}
+{% block conteudo %}
+<div class="card narrow">
+ <h3>{{ acao|default:"Apagar" }} {{ objeto }}?</h3>
+ {% if aviso %}<p class="rascunho"><span>{{ aviso }}</span></p>{% endif %}
+ <p class="mut">Confirme para continuar.</p>
+ <form method="post">{% csrf_token %}
+  <div class="ac"><a class="btn ghost" href="{% url voltar %}">Cancelar</a><button class="btn ros" type="submit">Sim, {{ acao|default:"apagar"|lower }}</button></div>
+ </form>
+</div>
+{% endblock %}
