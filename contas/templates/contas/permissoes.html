@@ -2,20 +2,20 @@
 {% block title %}Permissões{% endblock %}
 {% block conteudo %}
 <h2>Matriz de permissões</h2>
-<p class="mut" style="margin:-6px 0 12px">Marque quais módulos cada perfil enxerga. A mudança vale na próxima tela aberta. Usuários e Permissões ficam sempre só com o administrador; o Caderno é pessoal de cada atendente.</p>
-<div class="card tw" style="padding:6px" data-tour="Quem acessa o quê" data-tour-texto="Ligue ou desligue os módulos de cada perfil. O administrador sempre vê tudo.">
+<p class="lead">Marque quais módulos cada perfil enxerga. A mudança vale na próxima tela aberta. Usuários e Permissões ficam sempre só com o administrador; o Caderno é pessoal de cada atendente.</p>
+<div class="tw" data-tour="Quem acessa o quê" data-tour-texto="Ligue ou desligue os módulos de cada perfil. O administrador sempre vê tudo.">
  <table>
   <thead><tr><th>Módulo</th><th>Administrador</th>{% for p in perfis %}<th>{{ p.label }}</th>{% endfor %}</tr></thead>
   <tbody>
   {% for l in linhas %}
    <tr>
-    <td><b>{{ l.modulo.label }}</b></td><td>✓</td>
+    <td><b>{{ l.modulo.label }}</b></td><td><span class="mut">Sempre</span></td>
     {% for c in l.celulas %}
     <td>{% if l.configuravel %}
      <form method="post" class="inline">{% csrf_token %}
       <input type="hidden" name="perfil" value="{{ c.perfil.value }}"><input type="hidden" name="modulo" value="{{ l.modulo.value }}">
       <input type="hidden" name="liberado" value="{{ c.ligado|yesno:'0,1' }}">
-      <button type="submit" class="chip {% if c.ligado %}on{% endif %}" aria-label="{{ l.modulo.label }} para {{ c.perfil.label }}">{% if c.ligado %}Liberado{% else %}Bloqueado{% endif %}</button>
+      <button type="submit" class="chip tgl {% if c.ligado %}on{% endif %}" aria-label="{{ l.modulo.label }} para {{ c.perfil.label }}">{% if c.ligado %}Liberado{% else %}Bloqueado{% endif %}</button>
      </form>{% else %}<span class="mut">–</span>{% endif %}</td>
     {% endfor %}
    </tr>

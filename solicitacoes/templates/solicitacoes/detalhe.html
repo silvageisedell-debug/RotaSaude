@@ -3,7 +3,7 @@
 {% block conteudo %}
 <div class="grid2">
  <div class="card">
-  <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h3 style="margin:0">{{ s.codigo }} · {{ s.paciente }}</h3>{% pill s.get_status_display %}</div>
+  <div class="dhead"><h3>{{ s.codigo }} · {{ s.paciente }}</h3>{% pill s.get_status_display %}</div>
   <dl class="dl">
    <dt>Tipo</dt><dd>{{ s.get_tipo_display }}</dd>
    <dt>Categoria</dt><dd>{{ s.categoria }} (prioridade {{ s.categoria.prioridade }})</dd>

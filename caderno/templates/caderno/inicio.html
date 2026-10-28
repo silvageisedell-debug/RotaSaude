@@ -18,26 +18,26 @@
  <div class="nrw">
   {{ form.cor }}{{ form.fixada }}
   {% for i, c in cores %}<button type="button" class="cd {% if cor_atual == i %}on{% endif %}" style="background:{{ c }}" data-cor="{{ i }}" aria-label="Cor {{ forloop.counter }}"></button>{% endfor %}
-  <button type="button" class="chip {% if fixada_atual %}on{% endif %}" id="npin">📌 Fixar</button>
+  <button type="button" class="chip {% if fixada_atual %}on{% endif %}" id="npin">Fixar</button>
   <span style="flex:1"></span>
   {% if edicao %}<a class="btn ghost sm" href="{% url 'caderno:inicio' %}">Cancelar</a>{% endif %}
   <button class="btn em sm" type="submit">{% if edicao %}Salvar alterações{% else %}Salvar anotação{% endif %}</button>
  </div>
 </form>
 
-<form method="get" class="nrw" style="margin:16px 0 8px">
+<form method="get" class="nrw filtros-caderno">
  {% for k, rotulo in filtros %}<a class="chip {% if filtro == k %}on{% endif %}" href="?f={{ k }}">{{ rotulo }}</a>{% endfor %}
  <input type="hidden" name="f" value="{{ filtro }}">
- <input class="in" name="q" placeholder="Buscar" style="max-width:170px;margin-left:auto" value="{{ busca }}" aria-label="Buscar anotação">
+ <input class="in" name="q" placeholder="Buscar" value="{{ busca }}" aria-label="Buscar anotação">
 </form>
 
 <div class="ng" data-tour="Suas anotações" data-tour-texto="Cada anotação vira um bilhete colorido. Use Concluir, Editar ou Apagar, e os filtros para ver só lembretes, fixadas ou concluídas.">
  {% for n in anotacoes %}
  <div class="nt {% if n.concluida %}dn{% endif %}" style="--p:{{ n.cor_hex }};--r:{% cycle '-.5deg' '.5deg' %}">
-  {% if n.fixada %}<span class="npn">📌</span>{% endif %}
+  {% if n.fixada %}<span class="npn">Fixada</span>{% endif %}
   {% if n.titulo %}<b class="ntt">{{ n.titulo }}</b>{% endif %}
   <div class="ntx">{{ n.texto }}</div>
-  {% if n.lembrar_em %}<span class="rmc {% if n.vencida %}over{% endif %}">⏰ {{ n.lembrar_em|date:"d/m H:i" }}{% if n.vencida %} · venceu{% endif %}</span>{% endif %}
+  {% if n.lembrar_em %}<span class="rmc {% if n.vencida %}over{% endif %}">Lembrete {{ n.lembrar_em|date:"d/m H:i" }}{% if n.vencida %} · venceu{% endif %}</span>{% endif %}
   <div class="nac">
    <form method="post" action="{% url 'caderno:concluir' n.pk %}" class="inline">{% csrf_token %}<button class="btn ghost sm">{% if n.concluida %}Reabrir{% else %}Concluir{% endif %}</button></form>
    <a class="btn ghost sm" href="?editar={{ n.pk }}">Editar</a>

@@ -39,6 +39,7 @@ O protótipo montava as telas com JavaScript. A migração separou o que é regr
 ## Status
 
 Adotado nesta entrega.
+Parte visual substituída pelo ADR-026.
 
 ## Redação
 

@@ -5,14 +5,12 @@
 <h2>Painel de regulação</h2>
 <div class="kpis" data-tour="Indicadores" data-tour-texto="Solicitações pendentes, viagens de hoje, veículos disponíveis e pacientes atendidos. Toque em um deles para abrir a lista correspondente.">
  <a class="kpi" style="--c:{{ 'Pendente'|cor }}" href="{% url 'solicitacoes:lista' %}?modo=lista&status=pendente"><span>Solicitações pendentes</span><b>{{ kpi_pendentes }}</b></a>
- <a class="kpi" style="--c:#8B5CF6" href="{% if user_pode_viagens %}{% url 'viagens:quadro' %}{% else %}#{% endif %}"><span>Viagens hoje</span><b>{{ kpi_viagens_hoje }}</b></a>
- <a class="kpi" style="--c:#14B8A6" href="{% if user.e_admin %}{% url 'frota:veiculos' %}{% elif user_pode_viagens %}{% url 'viagens:quadro' %}{% else %}#{% endif %}"><span>Veículos disponíveis</span><b>{{ kpi_veiculos }}</b></a>
+ <a class="kpi" href="{% if user_pode_viagens %}{% url 'viagens:quadro' %}{% else %}#{% endif %}"><span>Viagens hoje</span><b>{{ kpi_viagens_hoje }}</b></a>
+ <a class="kpi" href="{% if user.e_admin %}{% url 'frota:veiculos' %}{% elif user_pode_viagens %}{% url 'viagens:quadro' %}{% else %}#{% endif %}"><span>Veículos disponíveis</span><b>{{ kpi_veiculos }}</b></a>
  <a class="kpi" style="--c:{{ 'Concluída'|cor }}" href="{% url 'solicitacoes:lista' %}?modo=lista&status=concluida"><span>Pacientes atendidos</span><b>{{ kpi_concluidas }}</b></a>
 </div>
 
-{% include "viagens/_disponibilidade.html" with titulo_disponibilidade="Disponibilidade hoje" %}
-
-<div class="grid2">
+<div class="grid2 par">
  <div class="card" data-tour="Solicitações por status" data-tour-texto="Quantidade de pedidos em cada etapa, de Pendente até Concluída.">
   <h3>Solicitações por status</h3>
   <div class="ch"><canvas id="grafico-status" aria-label="Gráfico de solicitações por status"></canvas></div>
@@ -29,10 +27,14 @@
  </div>
 </div>
 
-<div class="card mt" data-tour="Precisam de ação agora" data-tour-texto="Pedidos pendentes (para aceitar ou recusar) e aprovados (para programar a viagem).">
+<section class="secao mt" data-tour="Precisam de ação agora" data-tour-texto="Pedidos pendentes (para aceitar ou recusar) e aprovados (para programar a viagem).">
  <h3>Precisam de ação agora</h3>
  {% if precisam_acao %}
  <div class="cg">{% for s in precisam_acao %}{% include "solicitacoes/_cartao.html" %}{% endfor %}</div>
  {% else %}<div class="empty">Tudo em dia: nenhuma solicitação aguardando ação.</div>{% endif %}
+</section>
+
+<div class="mt">
+{% include "viagens/_disponibilidade.html" with titulo_disponibilidade="Disponibilidade hoje" %}
 </div>
 {% endblock %}

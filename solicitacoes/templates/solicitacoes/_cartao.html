@@ -1,8 +1,8 @@
 {# Cartão de solicitação (kanban, painel). Espera `s` e, opcionalmente, `voltar`. #}
 <div class="kc" style="--c:{{ s.get_status_display|cor }}">
- <a href="{% url 'solicitacoes:detalhe' s.pk %}" style="color:inherit;text-decoration:none"><b>{{ s.paciente }}</b> <small>{{ s.codigo }}</small></a>
- <div style="color:var(--mut);margin:3px 0">{{ s.get_tipo_display }} · {{ s.destino }}<br>{{ s.data|date:"d/m/Y" }} às {{ s.horario|time:"H:i" }}{% if s.acompanhante %} · com acompanhante{% endif %}</div>
- <span class="st" style="--c:{% if s.categoria.prioridade == 1 %}#E11D48{% elif s.categoria.prioridade == 2 %}#F59E0B{% else %}#64748B{% endif %}">{{ s.categoria }}</span>
+ <a href="{% url 'solicitacoes:detalhe' s.pk %}" style="color:inherit"><b>{{ s.paciente }}</b> <small>{{ s.codigo }}</small></a>
+ <div class="meta">{{ s.get_tipo_display }} · {{ s.destino }}<br>{{ s.data|date:"d/m/Y" }} às {{ s.horario|time:"H:i" }}{% if s.acompanhante %} · com acompanhante{% endif %}</div>
+ <span class="st" style="--c:{% if s.categoria.prioridade == 1 %}var(--negative){% elif s.categoria.prioridade == 2 %}var(--chart-3){% else %}var(--muted){% endif %}">{{ s.categoria }}</span>
  {% if s.status == "pendente" %}
  <div class="ac">
   {% if user_pode_viagens %}<a class="btn em sm" href="{% url 'viagens:programar' %}?solicitacao={{ s.pk }}">Aceitar e escolher veículo</a>{% endif %}

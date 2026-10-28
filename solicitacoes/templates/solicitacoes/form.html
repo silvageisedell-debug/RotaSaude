@@ -19,7 +19,7 @@
    {% include "parciais/campo.html" with campo=form.observacoes largo=True %}
    {% include "parciais/campo.html" with campo=form.acompanhante largo=True %}
   </div>
-  {% if not user.e_admin %}<p class="mut" style="font-size:12px">Local de embarque não está na lista? <a href="{% url 'frota:solicitar_ponto' %}">Solicite ao administrador</a>.</p>{% endif %}
+  {% if not user.e_admin %}<p class="mut" style="font-size:13px;margin:0">Local de embarque não está na lista? <a href="{% url 'frota:solicitar_ponto' %}">Solicite ao administrador</a>.</p>{% endif %}
   <div class="ac"><a class="btn ghost" href="{% url 'solicitacoes:lista' %}">Cancelar</a><button class="btn em" type="submit">Registrar</button></div>
  </form>
 </div>

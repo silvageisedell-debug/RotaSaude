@@ -10,7 +10,7 @@
  <div class="act" style="align-items:center">
   <i style="background:{{ 'Pendente'|cor }};margin-top:0"></i>
   <div style="flex:1"><b>{{ p.nome }}</b><small>{{ p.endereco }}{% if p.cep %} · CEP {{ p.cep }}{% endif %}</small><small>Pedido por {{ p.solicitante.nome }} em {{ p.criado_em|date:"d/m/Y H:i" }}{% if p.justificativa %} · {{ p.justificativa }}{% endif %}</small></div>
-  <span style="display:flex;gap:6px">
+  <span class="acoes">
    <form method="post" action="{% url 'frota:aprovar_pedido' p.pk %}" class="inline">{% csrf_token %}<button class="btn em sm">Aprovar</button></form>
    <a class="btn ghost sm" href="{% url 'frota:recusar_pedido' p.pk %}">Recusar</a>
   </span>
@@ -26,12 +26,12 @@
 {% endif %}
 <div class="card" data-tour="Pontos de embarque" data-tour-texto="Locais de coleta do paciente, com endereço para o motorista. Use Editar para corrigir e Remover para tirar da lista (as solicitações antigas continuam com o local).">
  <h3>Pontos de embarque</h3>
- <p class="mut" style="margin:0 0 10px;font-size:12px">Locais onde o paciente é buscado. Eles aparecem como opção de embarque nas solicitações.</p>
+ <p class="mut">Locais onde o paciente é buscado. Eles aparecem como opção de embarque nas solicitações.</p>
  {% for p in pontos %}
  <div class="act" style="align-items:center">
-  <i style="background:var(--em);margin-top:0"></i>
+  <i style="margin-top:0"></i>
   <div style="flex:1"><b>{{ p.nome }}</b><small>{{ p.endereco_completo }}</small></div>
-  <span style="display:flex;gap:6px"><a class="btn ghost sm" href="{% url 'frota:editar_ponto' p.pk %}">Editar</a><a class="btn ghost sm" href="{% url 'frota:remover_ponto' p.pk %}">Remover</a></span>
+  <span class="acoes"><a class="btn ghost sm" href="{% url 'frota:editar_ponto' p.pk %}">Editar</a><a class="btn ghost sm" href="{% url 'frota:remover_ponto' p.pk %}">Remover</a></span>
  </div>
  {% endfor %}
  <button type="button" class="accb" aria-expanded="{{ abrir_form|yesno:'true,false' }}">Cadastro de ponto de embarque</button>
