@@ -21,8 +21,8 @@
     {% for e in form.motorista.errors %}<div class="msg-erro">{{ e }}</div>{% endfor %}
    </div>
   </div>
-  <div class="sum" id="resumo-disponibilidade" style="margin:10px 0 0"></div>
-  <div class="lb" style="margin-top:12px">Pacientes aguardando viagem</div>
+  <div class="sum" id="resumo-disponibilidade" style="margin:0"></div>
+  <div class="lb" style="margin-top:24px">Pacientes aguardando viagem</div>
   {% for e in form.solicitacoes.errors %}<div class="msg-erro">{{ e }}</div>{% endfor %}
   {% for s in form.solicitacoes.field.queryset %}
   <label class="pax">

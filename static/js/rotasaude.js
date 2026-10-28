@@ -23,16 +23,44 @@
   window.rsToast = toast;
   $$("#toasts .toast").forEach((t, i) => setTimeout(() => t.remove(), 3200 + i * 400));
 
+  /* ---------- Tema claro/escuro (menu da conta) ---------- */
+  const btnTema = $("#btn-tema");
+  const temaAtual = () => document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const rotularTema = () => { if (btnTema) btnTema.textContent = temaAtual() === "dark" ? "Tema claro" : "Tema escuro"; };
+  rotularTema();
+  if (btnTema) btnTema.addEventListener("click", () => {
+    const novo = temaAtual() === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = novo;
+    guardar.gravar("rs_tema", novo);
+    rotularTema();
+    if (window.Chart) Object.values(Chart.instances).forEach((c) => c.update());
+  });
+
   /* ---------- Menu lateral ---------- */
   const app = $("#app");
   const btnRecolher = $("#colb");
   if (app && btnRecolher) {
-    if (guardar.ler("rs_menu_mini")) { app.classList.add("mini"); btnRecolher.textContent = "›"; }
+    // Abaixo de 1200px o menu fica só com ícones e, aberto, sobrepõe a tela (classe "aberto", não gravada).
+    const compacto = matchMedia("(max-width: 1199px)");
+    const sinal = () => {
+      const fechado = compacto.matches ? !app.classList.contains("aberto") : app.classList.contains("mini");
+      btnRecolher.textContent = fechado ? "›" : "‹";
+    };
+    const fecharSobreposto = () => { app.classList.remove("aberto"); sinal(); };
+    if (guardar.ler("rs_menu_mini")) app.classList.add("mini");
+    sinal();
     btnRecolher.addEventListener("click", () => {
+      if (compacto.matches) { app.classList.toggle("aberto"); sinal(); return; }
       app.classList.toggle("mini");
-      const mini = app.classList.contains("mini");
-      btnRecolher.textContent = mini ? "›" : "‹";
-      guardar.gravar("rs_menu_mini", mini);
+      guardar.gravar("rs_menu_mini", app.classList.contains("mini"));
+      sinal();
+    });
+    compacto.addEventListener("change", fecharSobreposto);
+    document.addEventListener("click", (e) => {
+      if (app.classList.contains("aberto") && !e.target.closest("#side")) fecharSobreposto();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && app.classList.contains("aberto")) fecharSobreposto();
     });
   }
   let ultimoY = 0;
@@ -251,7 +279,7 @@
     const url = prog.dataset.disponibilidade;
     const campo = (n) => prog.elements[n];
     let cache = null;
-    const linha = (alvo, x, selecionado) => `<div class="plr ${x.livre ? "" : "off"} ${String(x.id) === selecionado ? "sel" : ""}" ${x.livre ? `data-alvo="${alvo}" data-id="${x.id}"` : ""} role="option"><i style="background:${x.livre ? "#16A34A" : "#E11D48"}"></i><div><b>${esc(x.nome)}</b><small>${esc(x.info || "")}</small></div><span style="font-weight:700;font-size:12px;color:${x.livre ? "#16A34A" : "#E11D48"}">${esc(x.status)}</span></div>`;
+    const linha = (alvo, x, selecionado) => `<div class="plr ${x.livre ? "" : "off"} ${String(x.id) === selecionado ? "sel" : ""}" ${x.livre ? `data-alvo="${alvo}" data-id="${x.id}"` : ""} role="option"><i style="background:${x.livre ? "var(--positive)" : "var(--negative)"}"></i><div><b>${esc(x.nome)}</b><small>${esc(x.info || "")}</small></div><span style="font-weight:600;font-size:12px;color:${x.livre ? "var(--positive)" : "var(--negative)"}">${esc(x.status)}</span></div>`;
     function janela() {
       const s = campo("saida").value, d = Math.max(1, parseInt(campo("duracao_horas").value || "1", 10));
       const [h, m] = s.split(":").map(Number), fim = h * 60 + m + d * 60;
@@ -272,7 +300,7 @@
         if (sel.value && !livres.has(sel.value)) sel.value = "";
         const lista = $("#lista-" + nome);
         lista.innerHTML = `<div class="plh">${rotulo} em ${janela()}:</div>` + itens.map((x) => linha(nome, x, sel.value)).join("") +
-          (livres.size ? "" : `<div class="plh" style="color:#E11D48">Nenhum livre nesse horário. Mude a data, a saída ou a duração.</div>`);
+          (livres.size ? "" : `<div class="plh" style="color:var(--negative)">Nenhum livre nesse horário. Mude a data, a saída ou a duração.</div>`);
       });
       const nv = cache.veiculos.filter((x) => x.livre).length, nm = cache.motoristas.filter((x) => x.livre).length;
       $("#resumo-disponibilidade").textContent = `${nv} de ${cache.veiculos.length} veículos e ${nm} de ${cache.motoristas.length} motoristas disponíveis em ${janela()}.`;
@@ -327,11 +355,29 @@
   const dadosGrafico = $("#dados-grafico");
   if (dadosGrafico && window.Chart) {
     const d = JSON.parse(dadosGrafico.textContent);
-    Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue("--mut");
+    const tom = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
     new Chart($("#grafico-status"), {
-      type: "doughnut",
-      data: { labels: d.rotulos, datasets: [{ data: d.valores, backgroundColor: d.cores, borderRadius: 8 }] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } } },
+      type: "bar",
+      data: { labels: d.rotulos, datasets: [{ data: d.valores, backgroundColor: () => tom("--chart-1"), borderRadius: 3, maxBarThickness: 16 }] },
+      options: {
+        indexAxis: "y", responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+        // cores lidas na hora de desenhar, para acompanhar a troca de tema
+        scales: {
+          x: { beginAtZero: true, ticks: { precision: 0, color: () => tom("--muted") }, border: { display: false }, grid: { color: () => tom("--rule") } },
+          y: { ticks: { color: () => tom("--muted") }, grid: { display: false }, border: { display: false } },
+        },
+      },
     });
   }
+})();
+
+// Menu da conta (<details>): fecha ao clicar fora ou com Esc.
+(() => {
+  const menu = document.querySelector(".um");
+  if (!menu) return;
+  document.addEventListener("click", (e) => { if (menu.open && !menu.contains(e.target)) menu.open = false; });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && menu.open) { menu.open = false; menu.querySelector("summary").focus(); }
+  });
 })();

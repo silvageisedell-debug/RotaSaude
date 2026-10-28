@@ -3,17 +3,17 @@
 {% block conteudo %}
 <h2>Frota e motoristas</h2>
 {% include "frota/_abas.html" %}
-<div class="card tw" style="padding:6px" data-tour="Veículos" data-tour-texto="Lista da frota com placa e lugares. Mude o status para Disponível, Em viagem ou Manutenção. Veículos em manutenção não podem ser escolhidos ao programar viagens.">
+<div class="tw" data-tour="Veículos" data-tour-texto="Lista da frota com placa e lugares. Mude o status para Disponível, Em viagem ou Manutenção. Veículos em manutenção não podem ser escolhidos ao programar viagens.">
  <table>
-  <thead><tr><th>Veículo</th><th>Tipo</th><th>Placa</th><th>Chassi</th><th>Lugares</th><th>Status</th><th>Ações</th></tr></thead>
+  <thead><tr><th>Veículo</th><th>Tipo</th><th>Placa</th><th>Chassi</th><th class="n">Lugares</th><th>Status</th><th class="n">Ações</th></tr></thead>
   <tbody>
   {% for v in veiculos %}
    <tr>
     <td><b>{{ v.modelo }}</b><br> <small class="mut">{{ v.ano }}</small></td>
     <td>{{ v.get_tipo_display }}</td>
     <td class="nw">{{ v.placa_formatada }}</td>
-    <td><small>{{ v.chassi }}</small></td>
-    <td>{{ v.capacidade }}</td>
+    <td><small class="mut">{{ v.chassi }}</small></td>
+    <td class="n">{{ v.capacidade }}</td>
     <td>
      <form method="post" action="{% url 'frota:status_veiculo' v.pk %}" class="st-form">{% csrf_token %}
       <select class="in" name="status" onchange="this.form.submit()" aria-label="Status de {{ v.placa_formatada }}">
@@ -22,7 +22,7 @@
       <noscript><button class="btn sm">Salvar</button></noscript>
      </form>
     </td>
-    <td class="nw"><a class="btn ghost sm" href="{% url 'frota:editar_veiculo' v.pk %}">Editar</a> <a class="btn ghost sm" href="{% url 'frota:apagar_veiculo' v.pk %}">Apagar</a></td>
+    <td class="nw n"><a class="btn ghost sm" href="{% url 'frota:editar_veiculo' v.pk %}">Editar</a> <a class="btn ghost sm" href="{% url 'frota:apagar_veiculo' v.pk %}">Apagar</a></td>
    </tr>
   {% empty %}
    <tr><td colspan="7" class="empty">Nenhum veículo cadastrado ainda.</td></tr>

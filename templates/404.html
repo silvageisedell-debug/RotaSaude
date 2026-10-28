@@ -2,5 +2,5 @@
 {% block title %}Página não encontrada{% endblock %}
 {% block corpo %}{% if user.is_authenticated %}{{ block.super }}{% else %}<div id="login"><div class="lc"><h3>Página não encontrada</h3><a class="btn w" href="{% url 'contas:login' %}">Ir para o login</a></div></div>{% endif %}{% endblock %}
 {% block conteudo %}
-<div class="card empty"><span class="vazio-ico">🧭</span><b>Não encontramos esta página.</b><p>O endereço pode ter mudado. Use o menu ao lado.</p><a class="btn em" href="{{ url_inicio }}">Voltar ao início</a></div>
+<div class="card empty"><b>Não encontramos esta página.</b><p>O endereço pode ter mudado. Use o menu ao lado.</p><a class="btn em" href="{{ url_inicio }}">Voltar ao início</a></div>
 {% endblock %}

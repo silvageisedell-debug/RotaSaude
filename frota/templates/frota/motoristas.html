@@ -5,14 +5,14 @@
 {% include "frota/_abas.html" %}
 <div class="card" data-tour="Motoristas" data-tour-texto="Cadastro com ID, CPF e CNH (mostrados só em parte), categoria e validade. Motorista com CNH vencida fica indisponível nas viagens.">
  <h3>Motoristas</h3>
- <p class="mut" style="margin:0 0 8px;font-size:12px">CPF e CNH aparecem só em parte na lista. Motorista com CNH vencida fica indisponível para viagens.</p>
+ <p class="mut">CPF e CNH aparecem só em parte na lista. Motorista com CNH vencida fica indisponível para viagens.</p>
  {% for m in motoristas %}
  <div class="act" style="align-items:center">
-  <i style="background:{% if not m.cnh_valida %}#E11D48{% elif m.cnh_vence_em_breve %}#F59E0B{% else %}var(--em){% endif %};margin-top:0"></i>
+  <i style="background:{% if not m.cnh_valida %}var(--negative){% elif m.cnh_vence_em_breve %}var(--chart-3){% else %}var(--positive){% endif %};margin-top:0"></i>
   <div style="flex:1">
-   <b>{{ m.nome }}</b>{% if m.curso_emergencia %} <span class="st" style="--c:#0EA5E9">Curso de emergência</span>{% endif %}
+   <b>{{ m.nome }}</b>{% if m.curso_emergencia %} <span class="st">Curso de emergência</span>{% endif %}
    <small>ID {{ m.codigo }} · CPF {{ m.cpf_mascarado }} · CNH final {{ m.cnh_final }} cat. {{ m.categoria_cnh }}{% if m.telefone %} · {{ m.telefone }}{% endif %}</small>
-   <small style="{% if not m.cnh_valida %}color:#E11D48;font-weight:700{% elif m.cnh_vence_em_breve %}color:#B45309;font-weight:700{% endif %}">{% if m.cnh_valida %}CNH válida até {% else %}CNH vencida em {% endif %}{{ m.validade_cnh|date:"d/m/Y" }}{% if m.cnh_vence_em_breve %} · vence em breve{% endif %}</small>
+   <small style="{% if not m.cnh_valida %}color:var(--negative);font-weight:500{% elif m.cnh_vence_em_breve %}color:var(--warning);font-weight:500{% endif %}">{% if m.cnh_valida %}CNH válida até {% else %}CNH vencida em {% endif %}{{ m.validade_cnh|date:"d/m/Y" }}{% if m.cnh_vence_em_breve %} · vence em breve{% endif %}</small>
   </div>
   <a class="btn ghost sm" href="{% url 'frota:editar_motorista' m.pk %}">Editar</a>
  </div>

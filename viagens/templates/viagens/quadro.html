@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Viagens{% endblock %}
 {% block conteudo %}
-<div class="bar" style="justify-content:space-between">
- <h2 style="margin:0">Viagens</h2>
- <form method="get" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" data-tour="Dia e programação" data-tour-texto="Troque o dia com as setas ou o calendário, volte para Hoje e use + Programar viagem para escolher veículo, motorista, horário e pacientes.">
+<div class="pg-head">
+ <h2>Viagens</h2>
+ <form method="get" class="acoes" data-tour="Dia e programação" data-tour-texto="Troque o dia com as setas ou o calendário, volte para Hoje e use + Programar viagem para escolher veículo, motorista, horário e pacientes.">
   <a class="chip" href="?data={{ anterior|date:'Y-m-d' }}" aria-label="Dia anterior">‹</a>
-  <input class="in" type="date" name="data" style="width:auto" value="{{ dia|date:'Y-m-d' }}" onchange="this.form.submit()" aria-label="Dia">
+  <input class="in dia" type="date" name="data" value="{{ dia|date:'Y-m-d' }}" onchange="this.form.submit()" aria-label="Dia">
   <a class="chip" href="?data={{ seguinte|date:'Y-m-d' }}" aria-label="Dia seguinte">›</a>
   <a class="chip {% if dia == hoje %}on{% endif %}" href="?data={{ hoje|date:'Y-m-d' }}">Hoje</a>
   <a class="btn em" href="{% url 'viagens:programar' %}">+ Programar viagem</a>
@@ -34,8 +34,8 @@
  </div>
 </div>
 
+<p class="mut nota">Toque em uma viagem para ver os passageiros. Cada barra mostra o horário de saída e a duração.</p>
 <div class="mt">
 {% include "viagens/_disponibilidade.html" %}
 </div>
-<p class="mut" style="font-size:12px">Toque em uma viagem para ver os passageiros. Cada barra mostra o horário de saída e a duração.</p>
 {% endblock %}

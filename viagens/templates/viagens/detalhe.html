@@ -3,7 +3,7 @@
 {% block conteudo %}
 <div class="grid2">
  <div class="card">
-  <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><h3 style="margin:0">{{ viagem.codigo }} · {{ viagem.data|date:"d/m/Y" }}</h3>{% pill viagem.get_status_display %}</div>
+  <div class="dhead"><h3>{{ viagem.codigo }} · {{ viagem.data|date:"d/m/Y" }}</h3>{% pill viagem.get_status_display %}</div>
   <dl class="dl">
    <dt>Horário</dt><dd>{{ viagem.saida|time:"H:i" }} às {{ viagem.chegada|time:"H:i" }} ({{ viagem.duracao_horas }} h)</dd>
    <dt>Veículo</dt><dd>{{ viagem.veiculo }} · {{ viagem.veiculo.capacidade }} lugares</dd>
@@ -27,7 +27,7 @@
   {% empty %}
   <div class="empty">{% if viagem.status == "cancelada" %}Viagem cancelada: os pacientes voltaram para aprovadas.{% else %}Nenhum passageiro.{% endif %}</div>
   {% endfor %}
-  {% if viagem.status == "em_andamento" %}<p class="mut" style="margin-top:8px">Marque quem embarcou antes de concluir. Quem não embarcar volta para a regulação.</p>{% endif %}
+  {% if viagem.status == "em_andamento" %}<p class="mut" style="margin:12px 0 0">Marque quem embarcou antes de concluir. Quem não embarcar volta para a regulação.</p>{% endif %}
 
   <div class="ac">
    {% if viagem.status == "programada" %}
