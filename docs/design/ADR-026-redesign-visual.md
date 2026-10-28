@@ -51,4 +51,4 @@ Texto redigido com apoio de IA, em tom formal e informativo, seguindo as boas pr
 
 ## Commit
 
-Pendente.
+73e7447
